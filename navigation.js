@@ -3,26 +3,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get all sidebar links and section contents
     const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
     const sectionContents = document.querySelectorAll('.section-content');
-    
-    // Function to switch between sections
-    function switchSection(sectionId) {
-        // Hide all sections
-        sectionContents.forEach(section => section.classList.remove('active'));
-        
-        // Show selected section
-        const selectedSection = document.getElementById(sectionId + '-section');
-        if (selectedSection) {
-            selectedSection.classList.add('active');
-        }
-        
-        // Close sidebar on mobile
-        if (window.innerWidth < 992) {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.remove('show');
+
+    // Function to hide all sections
+    function hideAllSections() {
+        sectionContents.forEach(section => {
+            section.classList.remove('active');
+        });
+    }
+
+    // Function to show a specific section
+    function showSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.classList.add('active');
         }
     }
-    
-    // Add click event listeners to sidebar links
+
+    // Add click event listeners to all sidebar links
     sidebarLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -33,19 +30,25 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add active class to clicked link
             this.classList.add('active');
             
-            // Get the section to show from data-section attribute
-            const sectionId = this.getAttribute('data-section');
+            // Hide all sections
+            hideAllSections();
             
-            // Switch to the selected section
-            switchSection(sectionId);
+            // Show selected section
+            const sectionId = this.getAttribute('data-section') + '-section';
+            showSection(sectionId);
+            
+            // Close sidebar on mobile (if open)
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth < 992 && sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+            }
         });
     });
-    
+
     // Initialize the dashboard as the default active section
-    const defaultSection = 'dashboard';
-    const defaultLink = document.querySelector(`.sidebar-menu a[data-section="${defaultSection}"]`);
+    const defaultLink = document.querySelector('.sidebar-menu a[data-section="dashboard"]');
     if (defaultLink) {
         defaultLink.classList.add('active');
-        switchSection(defaultSection);
+        showSection('dashboard-section');
     }
 });
