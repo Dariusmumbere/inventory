@@ -748,6 +748,39 @@
         .toast.warning {
             background-color: var(--warning);
         }
+
+        /* Loading spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: var(--gray-light);
+        }
+
+        .empty-state p {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -816,18 +849,18 @@
                     </div>
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search...">
+                        <input type="text" id="globalSearch" placeholder="Search...">
                     </div>
                 </div>
                 <div class="header-right">
                     <div class="user-profile" id="userProfile">
-                        <img src="https://ui-avatars.com/api/?name=John+Doe&background=4361ee&color=fff" alt="User">
-                        <span class="user-name">John Doe</span>
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=4361ee&color=fff" alt="User">
+                        <span class="user-name">Admin User</span>
                         <i class="fas fa-chevron-down" style="margin-left: 5px; font-size: 12px;"></i>
                         <div class="dropdown-menu" id="dropdownMenu">
                             <a href="#"><i class="fas fa-user"></i> Profile</a>
-                            <a href="#"><i class="fas fa-cog"></i> Settings</a>
-                            <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                            <a href="#" data-section="settings"><i class="fas fa-cog"></i> Settings</a>
+                            <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
                         </div>
                     </div>
                 </div>
@@ -840,9 +873,9 @@
                     <div class="page-header">
                         <div class="page-title">
                             <h1>Dashboard</h1>
-                            <p>Welcome back, John! Here's what's happening with your inventory today.</p>
+                            <p>Welcome back! Here's what's happening with your inventory today.</p>
                         </div>
-                        <button class="btn btn-primary">
+                        <button class="btn btn-primary" id="addProductBtn">
                             <i class="fas fa-plus"></i> Add Product
                         </button>
                     </div>
@@ -893,7 +926,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h3>Recent Sales</h3>
-                                    <a href="#" class="btn btn-outline-primary btn-sm">View All</a>
+                                    <a href="#" data-section="sales" class="btn btn-outline-primary btn-sm">View All</a>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -901,8 +934,8 @@
                                             <thead>
                                                 <tr>
                                                     <th>ID</th>
-                                                    <th>Product</th>
-                                                    <th>Qty</th>
+                                                    <th>Customer</th>
+                                                    <th>Items</th>
                                                     <th>Amount</th>
                                                     <th>Date</th>
                                                 </tr>
@@ -919,7 +952,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h3>Low Stock Alert</h3>
-                                    <a href="#" class="btn btn-outline-primary btn-sm">View All</a>
+                                    <a href="#" data-section="inventory" class="btn btn-outline-primary btn-sm">View All</a>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -961,7 +994,7 @@
                         </div>
                         <div class="filter-group">
                             <select class="filter-select" id="productCategoryFilter">
-                                <option value="">All Products</option>
+                                <option value="">All Categories</option>
                                 <option value="Electronics">Electronics</option>
                                 <option value="Clothing">Clothing</option>
                                 <option value="Food">Food</option>
@@ -999,19 +1032,8 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="pagination">
-                                <div class="page-item">
-                                    <a href="#" class="page-link">1</a>
-                                </div>
-                                <div class="page-item">
-                                    <a href="#" class="page-link">2</a>
-                                </div>
-                                <div class="page-item">
-                                    <a href="#" class="page-link">3</a>
-                                </div>
-                                <div class="page-item">
-                                    <a href="#" class="page-link">Next</a>
-                                </div>
+                            <div class="pagination" id="productsPagination">
+                                <!-- Pagination will be generated here -->
                             </div>
                         </div>
                     </div>
@@ -1075,19 +1097,8 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="pagination">
-                                    <div class="page-item">
-                                        <a href="#" class="page-link">1</a>
-                                    </div>
-                                    <div class="page-item">
-                                        <a href="#" class="page-link">2</a>
-                                    </div>
-                                    <div class="page-item">
-                                        <a href="#" class="page-link">3</a>
-                                    </div>
-                                    <div class="page-item">
-                                        <a href="#" class="page-link">Next</a>
-                                    </div>
+                                <div class="pagination" id="inventoryPagination">
+                                    <!-- Pagination will be generated here -->
                                 </div>
                             </div>
                         </div>
@@ -1203,19 +1214,8 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="pagination">
-                                <div class="page-item">
-                                    <a href="#" class="page-link">1</a>
-                                </div>
-                                <div class="page-item">
-                                    <a href="#" class="page-link">2</a>
-                                </div>
-                                <div class="page-item">
-                                    <a href="#" class="page-link">3</a>
-                                </div>
-                                <div class="page-item">
-                                    <a href="#" class="page-link">Next</a>
-                                </div>
+                            <div class="pagination" id="salesPagination">
+                                <!-- Pagination will be generated here -->
                             </div>
                         </div>
                     </div>
@@ -1262,19 +1262,8 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="pagination">
-                                <div class="page-item">
-                                    <a href="#" class="page-link">1</a>
-                                </div>
-                                <div class="page-item">
-                                    <a href="#" class="page-link">2</a>
-                                </div>
-                                <div class="page-item">
-                                    <a href="#" class="page-link">3</a>
-                                </div>
-                                <div class="page-item">
-                                    <a href="#" class="page-link">Next</a>
-                                </div>
+                            <div class="pagination" id="suppliersPagination">
+                                <!-- Pagination will be generated here -->
                             </div>
                         </div>
                     </div>
@@ -1307,7 +1296,7 @@
                                         <option value="year">This Year</option>
                                         <option value="custom">Custom Range</option>
                                     </select>
-                                    <button class="btn btn-primary btn-sm">
+                                    <button class="btn btn-primary btn-sm" id="exportSalesReport">
                                         <i class="fas fa-download"></i> Export
                                     </button>
                                 </div>
@@ -1347,7 +1336,7 @@
                                         <option value="out">Out of Stock</option>
                                         <option value="category">By Category</option>
                                     </select>
-                                    <button class="btn btn-primary btn-sm">
+                                    <button class="btn btn-primary btn-sm" id="exportInventoryReport">
                                         <i class="fas fa-download"></i> Export
                                     </button>
                                 </div>
@@ -1386,7 +1375,7 @@
                                         <option value="year">This Year</option>
                                         <option value="custom">Custom Range</option>
                                     </select>
-                                    <button class="btn btn-primary btn-sm">
+                                    <button class="btn btn-primary btn-sm" id="exportProfitReport">
                                         <i class="fas fa-download"></i> Export
                                     </button>
                                 </div>
@@ -1422,7 +1411,7 @@
                     <div class="page-header">
                         <div class="page-title">
                             <h1>Settings</h1>
-                            <p>Configure your inventory management system for sales</p>
+                            <p>Configure your inventory management system.</p>
                         </div>
                     </div>
 
@@ -1436,13 +1425,13 @@
                                     <div class="form-col">
                                         <div class="form-group">
                                             <label class="form-label">Business Name</label>
-                                            <input type="text" class="form-control" id="businessName" value="My Business">
+                                            <input type="text" class="form-control" id="businessName" required>
                                         </div>
                                     </div>
                                     <div class="form-col">
                                         <div class="form-group">
                                             <label class="form-label">Currency</label>
-                                            <select class="form-control" id="currency">
+                                            <select class="form-control" id="currency" required>
                                                 <option value="USD">US Dollar ($)</option>
                                                 <option value="EUR">Euro (€)</option>
                                                 <option value="GBP">British Pound (£)</option>
@@ -1453,19 +1442,19 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Business Address</label>
-                                    <textarea class="form-control" id="businessAddress" rows="3">123 Business St, City, Country</textarea>
+                                    <textarea class="form-control" id="businessAddress" rows="3" required></textarea>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-col">
                                         <div class="form-group">
                                             <label class="form-label">Default Low Stock Threshold</label>
-                                            <input type="number" class="form-control" id="lowStockThreshold" value="10">
+                                            <input type="number" class="form-control" id="lowStockThreshold" min="1" required>
                                         </div>
                                     </div>
                                     <div class="form-col">
                                         <div class="form-group">
                                             <label class="form-label">Tax Rate (%)</label>
-                                            <input type="number" class="form-control" id="taxRate" value="7.5" step="0.1">
+                                            <input type="number" class="form-control" id="taxRate" min="0" max="100" step="0.1" required>
                                         </div>
                                     </div>
                                 </div>
@@ -1498,28 +1487,14 @@
                                     </thead>
                                     <tbody id="usersTable">
                                         <tr>
-                                            <td>John Doe</td>
-                                            <td>john@example.com</td>
+                                            <td>Admin User</td>
+                                            <td>admin@example.com</td>
                                             <td>Admin</td>
-                                            <td>Today, 10:30 AM</td>
+                                            <td>Today</td>
                                             <td><span class="badge badge-success">Active</span></td>
                                             <td>
                                                 <div class="action-btns">
                                                     <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                                    <button class="action-btn delete"><i class="fas fa-trash"></i></button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Jane Smith</td>
-                                            <td>jane@example.com</td>
-                                            <td>Manager</td>
-                                            <td>Yesterday, 3:45 PM</td>
-                                            <td><span class="badge badge-success">Active</span></td>
-                                            <td>
-                                                <div class="action-btns">
-                                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                                    <button class="action-btn delete"><i class="fas fa-trash"></i></button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -1548,13 +1523,13 @@
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Product Name</label>
+                                <label class="form-label">Product Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="productName" required>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">SKU</label>
+                                <label class="form-label">SKU <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="productSKU" required>
                             </div>
                         </div>
@@ -1562,7 +1537,7 @@
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Category</label>
+                                <label class="form-label">Category <span class="text-danger">*</span></label>
                                 <select class="form-control" id="productCategory" required>
                                     <option value="">Select Category</option>
                                     <option value="Electronics">Electronics</option>
@@ -1574,12 +1549,9 @@
                         </div>
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Supplier</label>
+                                <label class="form-label">Supplier <span class="text-danger">*</span></label>
                                 <select class="form-control" id="productSupplier" required>
                                     <option value="">Select Supplier</option>
-                                    <option value="1">ABC Suppliers</option>
-                                    <option value="2">XYZ Distributors</option>
-                                    <option value="3">Global Goods</option>
                                 </select>
                             </div>
                         </div>
@@ -1587,28 +1559,28 @@
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Purchase Price</label>
-                                <input type="number" class="form-control" id="productPurchasePrice" step="0.01" required>
+                                <label class="form-label">Purchase Price <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="productPurchasePrice" min="0" step="0.01" required>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Selling Price</label>
-                                <input type="number" class="form-control" id="productSellingPrice" step="0.01" required>
+                                <label class="form-label">Selling Price <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="productSellingPrice" min="0" step="0.01" required>
                             </div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Initial Stock</label>
-                                <input type="number" class="form-control" id="productStock" required>
+                                <label class="form-label">Initial Stock <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="productStock" min="0" required>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
                                 <label class="form-label">Reorder Level</label>
-                                <input type="number" class="form-control" id="productReorderLevel" value="10">
+                                <input type="number" class="form-control" id="productReorderLevel" min="0">
                             </div>
                         </div>
                     </div>
@@ -1618,13 +1590,100 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Product Image</label>
-                        <input type="file" class="form-control" id="productImage">
+                        <input type="file" class="form-control" id="productImage" accept="image/*">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline-primary" id="cancelProduct">Cancel</button>
                 <button class="btn btn-primary" id="saveProduct">Save Product</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div class="modal" id="editProductModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Edit Product</h3>
+                <button class="modal-close" id="closeEditProductModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editProductForm">
+                    <input type="hidden" id="editProductId">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Product Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="editProductName" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">SKU <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="editProductSKU" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Category <span class="text-danger">*</span></label>
+                                <select class="form-control" id="editProductCategory" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Clothing">Clothing</option>
+                                    <option value="Food">Food</option>
+                                    <option value="Furniture">Furniture</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Supplier <span class="text-danger">*</span></label>
+                                <select class="form-control" id="editProductSupplier" required>
+                                    <option value="">Select Supplier</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Purchase Price <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="editProductPurchasePrice" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Selling Price <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="editProductSellingPrice" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Current Stock <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="editProductStock" min="0" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Reorder Level</label>
+                                <input type="number" class="form-control" id="editProductReorderLevel" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="editProductDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-primary" id="cancelEditProduct">Cancel</button>
+                <button class="btn btn-primary" id="updateProduct">Update Product</button>
             </div>
         </div>
     </div>
@@ -1641,35 +1700,31 @@
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Product</label>
+                                <label class="form-label">Product <span class="text-danger">*</span></label>
                                 <select class="form-control" id="inventoryProduct" required>
                                     <option value="">Select Product</option>
-                                    <!-- Products will be populated here -->
                                 </select>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Quantity</label>
-                                <input type="number" class="form-control" id="inventoryQuantity" required>
+                                <label class="form-label">Quantity <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="inventoryQuantity" min="1" required>
                             </div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Supplier</label>
+                                <label class="form-label">Supplier <span class="text-danger">*</span></label>
                                 <select class="form-control" id="inventorySupplier" required>
                                     <option value="">Select Supplier</option>
-                                    <option value="1">ABC Suppliers</option>
-                                    <option value="2">XYZ Distributors</option>
-                                    <option value="3">Global Goods</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Date</label>
+                                <label class="form-label">Date <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" id="inventoryDate" required>
                             </div>
                         </div>
@@ -1698,13 +1753,13 @@
                 <div class="form-row">
                     <div class="form-col">
                         <div class="form-group">
-                            <label class="form-label">Customer Name</label>
-                            <input type="text" class="form-control" id="saleCustomer">
+                            <label class="form-label">Customer Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="saleCustomer" required>
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group">
-                            <label class="form-label">Date</label>
+                            <label class="form-label">Date <span class="text-danger">*</span></label>
                             <input type="date" class="form-control" id="saleDate" required>
                         </div>
                     </div>
@@ -1731,7 +1786,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <button class="btn btn-outline-primary" id="addSaleItem">
+                        <button type="button" class="btn btn-outline-primary" id="addSaleItem">
                             <i class="fas fa-plus"></i> Add Item
                         </button>
                     </div>
@@ -1746,7 +1801,7 @@
                     </div>
                     <div class="form-col">
                         <div class="form-group">
-                            <label class="form-label">Tax (7.5%)</label>
+                            <label class="form-label">Tax</label>
                             <input type="text" class="form-control" id="saleTax" readonly>
                         </div>
                     </div>
@@ -1759,8 +1814,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">Payment Method</label>
-                    <select class="form-control" id="salePaymentMethod">
+                    <label class="form-label">Payment Method <span class="text-danger">*</span></label>
+                    <select class="form-control" id="salePaymentMethod" required>
                         <option value="cash">Cash</option>
                         <option value="credit">Credit Card</option>
                         <option value="bank">Bank Transfer</option>
@@ -1774,8 +1829,106 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline-primary" id="cancelSale">Cancel</button>
-                <button class="btn btn-primary" id="saveSale">Complete Sale</button>
+                <button type="button" class="btn btn-outline-primary" id="cancelSale">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveSale">Complete Sale</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Sale Modal -->
+    <div class="modal" id="viewSaleModal">
+        <div class="modal-dialog" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>Sale Details</h3>
+                <button class="modal-close" id="closeViewSaleModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Invoice #</label>
+                            <input type="text" class="form-control" id="viewSaleId" readonly>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Date</label>
+                            <input type="text" class="form-control" id="viewSaleDate" readonly>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Customer</label>
+                    <input type="text" class="form-control" id="viewSaleCustomer" readonly>
+                </div>
+                
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-header">
+                        <h3>Sale Items</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Qty</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="viewSaleItemsTable">
+                                    <!-- Sale items will be added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Subtotal</label>
+                            <input type="text" class="form-control" id="viewSaleSubtotal" readonly>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Tax</label>
+                            <input type="text" class="form-control" id="viewSaleTax" readonly>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Total</label>
+                            <input type="text" class="form-control" id="viewSaleTotal" readonly>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Payment Method</label>
+                            <input type="text" class="form-control" id="viewSalePaymentMethod" readonly>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <input type="text" class="form-control" id="viewSaleStatus" readonly>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-control" id="viewSaleNotes" rows="2" readonly></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="closeViewSale">Close</button>
             </div>
         </div>
     </div>
@@ -1790,31 +1943,30 @@
             <div class="modal-body">
                 <form id="saleItemForm">
                     <div class="form-group">
-                        <label class="form-label">Product</label>
+                        <label class="form-label">Product <span class="text-danger">*</span></label>
                         <select class="form-control" id="saleItemProduct" required>
                             <option value="">Select Product</option>
-                            <!-- Products will be populated here -->
                         </select>
                     </div>
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Price</label>
-                                <input type="number" class="form-control" id="saleItemPrice" step="0.01" required>
+                                <label class="form-label">Price <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="saleItemPrice" min="0" step="0.01" required>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Quantity</label>
-                                <input type="number" class="form-control" id="saleItemQuantity" required>
+                                <label class="form-label">Quantity <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="saleItemQuantity" min="1" required>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline-primary" id="cancelSaleItem">Cancel</button>
-                <button class="btn btn-primary" id="saveSaleItem">Add Item</button>
+                <button type="button" class="btn btn-outline-primary" id="cancelSaleItem">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveSaleItem">Add Item</button>
             </div>
         </div>
     </div>
@@ -1831,7 +1983,7 @@
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Supplier Name</label>
+                                <label class="form-label">Supplier Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="supplierName" required>
                             </div>
                         </div>
@@ -1867,8 +2019,63 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline-primary" id="cancelSupplier">Cancel</button>
-                <button class="btn btn-primary" id="saveSupplier">Save Supplier</button>
+                <button type="button" class="btn btn-outline-primary" id="cancelSupplier">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveSupplier">Save Supplier</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Supplier Modal -->
+    <div class="modal" id="editSupplierModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Edit Supplier</h3>
+                <button class="modal-close" id="closeEditSupplierModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editSupplierForm">
+                    <input type="hidden" id="editSupplierId">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Supplier Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="editSupplierName" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Contact Person</label>
+                                <input type="text" class="form-control" id="editSupplierContact">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editSupplierEmail">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="editSupplierPhone">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" id="editSupplierAddress" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Products Supplied</label>
+                        <input type="text" class="form-control" id="editSupplierProducts" placeholder="Comma separated list of products">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" id="cancelEditSupplier">Cancel</button>
+                <button type="button" class="btn btn-primary" id="updateSupplier">Update Supplier</button>
             </div>
         </div>
     </div>
@@ -1885,13 +2092,13 @@
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Full Name</label>
+                                <label class="form-label">Full Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="userName" required>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Email</label>
+                                <label class="form-label">Email <span class="text-danger">*</span></label>
                                 <input type="email" class="form-control" id="userEmail" required>
                             </div>
                         </div>
@@ -1899,13 +2106,13 @@
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Password</label>
+                                <label class="form-label">Password <span class="text-danger">*</span></label>
                                 <input type="password" class="form-control" id="userPassword" required>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Confirm Password</label>
+                                <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
                                 <input type="password" class="form-control" id="userConfirmPassword" required>
                             </div>
                         </div>
@@ -1913,7 +2120,7 @@
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Role</label>
+                                <label class="form-label">Role <span class="text-danger">*</span></label>
                                 <select class="form-control" id="userRole" required>
                                     <option value="">Select Role</option>
                                     <option value="admin">Admin</option>
@@ -1924,7 +2131,7 @@
                         </div>
                         <div class="form-col">
                             <div class="form-group">
-                                <label class="form-label">Status</label>
+                                <label class="form-label">Status <span class="text-danger">*</span></label>
                                 <select class="form-control" id="userStatus" required>
                                     <option value="active">Active</option>
                                     <option value="inactive">Inactive</option>
@@ -1935,42 +2142,51 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline-primary" id="cancelUser">Cancel</button>
-                <button class="btn btn-primary" id="saveUser">Save User</button>
+                <button type="button" class="btn btn-outline-primary" id="cancelUser">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveUser">Save User</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="confirmModalTitle">Confirm Action</h3>
+                <button class="modal-close" id="closeConfirmModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" id="cancelConfirm">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmAction">Confirm</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Sample data for the application
-        const sampleData = {
-            products: [
-                { id: 1, name: "Laptop", sku: "LP1001", category: "Electronics", price: 999.99, stock: 15, reorderLevel: 5, status: "In Stock", supplier: "ABC Suppliers" },
-                { id: 2, name: "Smartphone", sku: "SP2002", category: "Electronics", price: 699.99, stock: 25, reorderLevel: 10, status: "In Stock", supplier: "XYZ Distributors" },
-                { id: 3, name: "T-Shirt", sku: "TS3003", category: "Clothing", price: 19.99, stock: 50, reorderLevel: 20, status: "In Stock", supplier: "Global Goods" },
-                { id: 4, name: "Coffee", sku: "CF4004", category: "Food", price: 9.99, stock: 30, reorderLevel: 15, status: "In Stock", supplier: "ABC Suppliers" },
-                { id: 5, name: "Desk Chair", sku: "DC5005", category: "Furniture", price: 149.99, stock: 8, reorderLevel: 5, status: "Low Stock", supplier: "XYZ Distributors" },
-                { id: 6, name: "Headphones", sku: "HP6006", category: "Electronics", price: 79.99, stock: 0, reorderLevel: 10, status: "Out of Stock", supplier: "Global Goods" }
-            ],
-            sales: [
-                { id: 1001, customer: "John Smith", date: "2023-05-15", items: 3, total: 189.97, status: "Completed" },
-                { id: 1002, customer: "Jane Doe", date: "2023-05-14", items: 1, total: 999.99, status: "Completed" },
-                { id: 1003, customer: "Robert Johnson", date: "2023-05-14", items: 2, total: 49.98, status: "Completed" },
-                { id: 1004, customer: "Emily Davis", date: "2023-05-13", items: 5, total: 79.95, status: "Completed" },
-                { id: 1005, customer: "Michael Wilson", date: "2023-05-12", items: 1, total: 149.99, status: "Pending" }
-            ],
-            suppliers: [
-                { id: 1, name: "ABC Suppliers", contact: "John Supplier", email: "john@abcsuppliers.com", products: "Laptop, Coffee, Printer" },
-                { id: 2, name: "XYZ Distributors", contact: "Jane Distributor", email: "jane@xyzdist.com", products: "Smartphone, Desk Chair, Monitor" },
-                { id: 3, name: "Global Goods", contact: "Robert Global", email: "robert@globalgoods.com", products: "T-Shirt, Headphones, Keyboard" }
-            ],
-            inventory: [
-                { id: 1, product: "Laptop", sku: "LP1001", category: "Electronics", stock: 15, reorderLevel: 5, lastUpdated: "2023-05-10" },
-                { id: 2, product: "Smartphone", sku: "SP2002", category: "Electronics", stock: 25, reorderLevel: 10, lastUpdated: "2023-05-12" },
-                { id: 3, product: "T-Shirt", sku: "TS3003", category: "Clothing", stock: 50, reorderLevel: 20, lastUpdated: "2023-05-08" },
-                { id: 4, product: "Coffee", sku: "CF4004", category: "Food", stock: 30, reorderLevel: 15, lastUpdated: "2023-05-14" },
-                { id: 5, product: "Desk Chair", sku: "DC5005", category: "Furniture", stock: 8, reorderLevel: 5, lastUpdated: "2023-05-11" },
-                { id: 6, product: "Headphones", sku: "HP6006", category: "Electronics", stock: 0, reorderLevel: 10, lastUpdated: "2023-05-09" }
+        // Data structure for the application
+        const appData = {
+            settings: {
+                businessName: "My Business",
+                businessAddress: "123 Business St, City, Country",
+                currency: "USD",
+                lowStockThreshold: 10,
+                taxRate: 7.5
+            },
+            products: [],
+            sales: [],
+            suppliers: [],
+            users: [
+                {
+                    id: 1,
+                    name: "Admin User",
+                    email: "admin@example.com",
+                    role: "admin",
+                    status: "active",
+                    lastLogin: new Date().toISOString()
+                }
             ]
         };
 
@@ -1984,6 +2200,8 @@
         const sectionContents = document.querySelectorAll('.section-content');
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const globalSearch = document.getElementById('globalSearch');
 
         // Modal Elements
         const addProductBtn = document.getElementById('addProductBtn');
@@ -1991,6 +2209,13 @@
         const closeProductModal = document.getElementById('closeProductModal');
         const cancelProduct = document.getElementById('cancelProduct');
         const saveProduct = document.getElementById('saveProduct');
+        const productForm = document.getElementById('productForm');
+
+        const editProductModal = document.getElementById('editProductModal');
+        const closeEditProductModal = document.getElementById('closeEditProductModal');
+        const cancelEditProduct = document.getElementById('cancelEditProduct');
+        const updateProduct = document.getElementById('updateProduct');
+        const editProductForm = document.getElementById('editProductForm');
 
         const addInventoryBtn = document.getElementById('addInventoryBtn');
         const addInventoryModal = document.getElementById('addInventoryModal');
@@ -1998,6 +2223,7 @@
         const cancelInventory = document.getElementById('cancelInventory');
         const saveInventory = document.getElementById('saveInventory');
         const inventoryProduct = document.getElementById('inventoryProduct');
+        const inventorySupplier = document.getElementById('inventorySupplier');
 
         const addSaleBtn = document.getElementById('addSaleBtn');
         const addSaleModal = document.getElementById('addSaleModal');
@@ -2010,6 +2236,10 @@
         const saleTax = document.getElementById('saleTax');
         const saleTotal = document.getElementById('saleTotal');
 
+        const viewSaleModal = document.getElementById('viewSaleModal');
+        const closeViewSaleModal = document.getElementById('closeViewSaleModal');
+        const closeViewSale = document.getElementById('closeViewSale');
+
         const addSaleItemModal = document.getElementById('addSaleItemModal');
         const closeSaleItemModal = document.getElementById('closeSaleItemModal');
         const cancelSaleItem = document.getElementById('cancelSaleItem');
@@ -2021,220 +2251,605 @@
         const closeSupplierModal = document.getElementById('closeSupplierModal');
         const cancelSupplier = document.getElementById('cancelSupplier');
         const saveSupplier = document.getElementById('saveSupplier');
+        const supplierForm = document.getElementById('supplierForm');
+
+        const editSupplierModal = document.getElementById('editSupplierModal');
+        const closeEditSupplierModal = document.getElementById('closeEditSupplierModal');
+        const cancelEditSupplier = document.getElementById('cancelEditSupplier');
+        const updateSupplier = document.getElementById('updateSupplier');
+        const editSupplierForm = document.getElementById('editSupplierForm');
 
         const addUserBtn = document.getElementById('addUserBtn');
         const addUserModal = document.getElementById('addUserModal');
         const closeUserModal = document.getElementById('closeUserModal');
         const cancelUser = document.getElementById('cancelUser');
         const saveUser = document.getElementById('saveUser');
+        const userForm = document.getElementById('userForm');
+
+        const confirmModal = document.getElementById('confirmModal');
+        const closeConfirmModal = document.getElementById('closeConfirmModal');
+        const cancelConfirm = document.getElementById('cancelConfirm');
+        const confirmAction = document.getElementById('confirmAction');
+        const confirmModalTitle = document.getElementById('confirmModalTitle');
+        const confirmModalMessage = document.getElementById('confirmModalMessage');
 
         const toastContainer = document.getElementById('toastContainer');
 
+        // Search and filter elements
+        const productSearch = document.getElementById('productSearch');
+        const productCategoryFilter = document.getElementById('productCategoryFilter');
+        const productStatusFilter = document.getElementById('productStatusFilter');
+
+        const inventorySearch = document.getElementById('inventorySearch');
+        const inventoryCategoryFilter = document.getElementById('inventoryCategoryFilter');
+
+        const salesSearch = document.getElementById('salesSearch');
+        const salesDateFilter = document.getElementById('salesDateFilter');
+        const salesStatusFilter = document.getElementById('salesStatusFilter');
+
+        const supplierSearch = document.getElementById('supplierSearch');
+
+        // Settings form elements
+        const settingsForm = document.getElementById('settingsForm');
+        const businessName = document.getElementById('businessName');
+        const businessAddress = document.getElementById('businessAddress');
+        const currency = document.getElementById('currency');
+        const lowStockThreshold = document.getElementById('lowStockThreshold');
+        const taxRate = document.getElementById('taxRate');
+
+        // Report export buttons
+        const exportSalesReport = document.getElementById('exportSalesReport');
+        const exportInventoryReport = document.getElementById('exportInventoryReport');
+        const exportProfitReport = document.getElementById('exportProfitReport');
+
+        // Current item to be deleted
+        let itemToDelete = null;
+        let deleteCallback = null;
+
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
-            // Load sample data
+            // Load data from localStorage
+            loadDataFromStorage();
+            
+            // Set current date in forms
+            document.getElementById('saleDate').valueAsDate = new Date();
+            document.getElementById('inventoryDate').valueAsDate = new Date();
+            
+            // Initialize UI
+            initializeUI();
+            
+            // Load dashboard data
             loadDashboardData();
+            
+            // Load initial tables
             loadProductsTable();
             loadInventoryTable();
             loadSalesTable();
             loadSuppliersTable();
-            populateInventoryProductDropdown();
-            populateSaleItemProductDropdown();
-
-            // Set current date in sale form
-            document.getElementById('saleDate').valueAsDate = new Date();
-            document.getElementById('inventoryDate').valueAsDate = new Date();
+            
+            // Populate dropdowns
+            populateSupplierDropdowns();
+            populateProductDropdowns();
+            
+            // Load settings
+            loadSettings();
         });
 
-        // Toggle sidebar on mobile
-        menuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('show');
-        });
-
-        // Toggle dropdown menu
-        userProfile.addEventListener('click', function() {
-            dropdownMenu.classList.toggle('show');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!userProfile.contains(e.target)) {
-                dropdownMenu.classList.remove('show');
+        // Load data from localStorage
+        function loadDataFromStorage() {
+            const savedData = localStorage.getItem('stockMasterData');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                Object.assign(appData, parsedData);
+            } else {
+                // Load sample data if no saved data exists
+                loadSampleData();
             }
-        });
+        }
 
-        // Switch between sections
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Remove active class from all links
-                sidebarLinks.forEach(l => l.classList.remove('active'));
-                
-                // Add active class to clicked link
-                this.classList.add('active');
-                
-                // Hide all sections
-                sectionContents.forEach(section => section.classList.remove('active'));
-                
-                // Show selected section
-                const sectionId = this.getAttribute('data-section') + '-section';
-                document.getElementById(sectionId).classList.add('active');
-                
-                // Close sidebar on mobile
-                if (window.innerWidth < 992) {
-                    sidebar.classList.remove('show');
+        // Save data to localStorage
+        function saveDataToStorage() {
+            localStorage.setItem('stockMasterData', JSON.stringify(appData));
+        }
+
+        // Load sample data
+        function loadSampleData() {
+            appData.products = [
+                { 
+                    id: generateId('products'), 
+                    name: "Laptop", 
+                    sku: "LP1001", 
+                    category: "Electronics", 
+                    purchasePrice: 800, 
+                    sellingPrice: 999.99, 
+                    stock: 15, 
+                    reorderLevel: 5, 
+                    status: "In Stock", 
+                    supplierId: 1,
+                    description: "High performance laptop with 16GB RAM and 512GB SSD",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                { 
+                    id: generateId('products'), 
+                    name: "Smartphone", 
+                    sku: "SP2002", 
+                    category: "Electronics", 
+                    purchasePrice: 500, 
+                    sellingPrice: 699.99, 
+                    stock: 25, 
+                    reorderLevel: 10, 
+                    status: "In Stock", 
+                    supplierId: 2,
+                    description: "Latest smartphone with 128GB storage",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                { 
+                    id: generateId('products'), 
+                    name: "T-Shirt", 
+                    sku: "TS3003", 
+                    category: "Clothing", 
+                    purchasePrice: 10, 
+                    sellingPrice: 19.99, 
+                    stock: 50, 
+                    reorderLevel: 20, 
+                    status: "In Stock", 
+                    supplierId: 3,
+                    description: "Cotton t-shirt in various colors",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                { 
+                    id: generateId('products'), 
+                    name: "Coffee", 
+                    sku: "CF4004", 
+                    category: "Food", 
+                    purchasePrice: 5, 
+                    sellingPrice: 9.99, 
+                    stock: 30, 
+                    reorderLevel: 15, 
+                    status: "In Stock", 
+                    supplierId: 1,
+                    description: "Premium ground coffee beans",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                { 
+                    id: generateId('products'), 
+                    name: "Desk Chair", 
+                    sku: "DC5005", 
+                    category: "Furniture", 
+                    purchasePrice: 100, 
+                    sellingPrice: 149.99, 
+                    stock: 8, 
+                    reorderLevel: 5, 
+                    status: "Low Stock", 
+                    supplierId: 2,
+                    description: "Ergonomic office chair with adjustable height",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                { 
+                    id: generateId('products'), 
+                    name: "Headphones", 
+                    sku: "HP6006", 
+                    category: "Electronics", 
+                    purchasePrice: 50, 
+                    sellingPrice: 79.99, 
+                    stock: 0, 
+                    reorderLevel: 10, 
+                    status: "Out of Stock", 
+                    supplierId: 3,
+                    description: "Wireless headphones with noise cancellation",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                }
+            ];
+
+            appData.sales = [
+                { 
+                    id: generateId('sales'), 
+                    customer: "John Smith", 
+                    date: new Date().toISOString().split('T')[0], 
+                    items: [
+                        { productId: 1, name: "Laptop", price: 999.99, quantity: 1 },
+                        { productId: 3, name: "T-Shirt", price: 19.99, quantity: 2 }
+                    ], 
+                    subtotal: 1039.97,
+                    tax: 77.99775,
+                    total: 1117.96775,
+                    paymentMethod: "credit",
+                    status: "completed",
+                    notes: "",
+                    createdAt: new Date().toISOString()
+                },
+                { 
+                    id: generateId('sales'), 
+                    customer: "Jane Doe", 
+                    date: new Date().toISOString().split('T')[0], 
+                    items: [
+                        { productId: 2, name: "Smartphone", price: 699.99, quantity: 1 }
+                    ], 
+                    subtotal: 699.99,
+                    tax: 52.49925,
+                    total: 752.48925,
+                    paymentMethod: "bank",
+                    status: "completed",
+                    notes: "Customer requested delivery",
+                    createdAt: new Date().toISOString()
+                },
+                { 
+                    id: generateId('sales'), 
+                    customer: "Robert Johnson", 
+                    date: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0], 
+                    items: [
+                        { productId: 4, name: "Coffee", price: 9.99, quantity: 5 }
+                    ], 
+                    subtotal: 49.95,
+                    tax: 3.74625,
+                    total: 53.69625,
+                    paymentMethod: "cash",
+                    status: "completed",
+                    notes: "",
+                    createdAt: new Date().toISOString()
+                },
+                { 
+                    id: generateId('sales'), 
+                    customer: "Emily Davis", 
+                    date: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString().split('T')[0], 
+                    items: [
+                        { productId: 5, name: "Desk Chair", price: 149.99, quantity: 1 }
+                    ], 
+                    subtotal: 149.99,
+                    tax: 11.24925,
+                    total: 161.23925,
+                    paymentMethod: "credit",
+                    status: "completed",
+                    notes: "",
+                    createdAt: new Date().toISOString()
+                }
+            ];
+
+            appData.suppliers = [
+                { 
+                    id: generateId('suppliers'), 
+                    name: "ABC Suppliers", 
+                    contact: "John Supplier", 
+                    email: "john@abcsuppliers.com", 
+                    phone: "+1 (555) 123-4567",
+                    address: "123 Supplier St, Supplier City",
+                    products: "Laptop, Coffee, Printer",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                { 
+                    id: generateId('suppliers'), 
+                    name: "XYZ Distributors", 
+                    contact: "Jane Distributor", 
+                    email: "jane@xyzdist.com", 
+                    phone: "+1 (555) 987-6543",
+                    address: "456 Distributor Ave, Distributor City",
+                    products: "Smartphone, Desk Chair, Monitor",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                { 
+                    id: generateId('suppliers'), 
+                    name: "Global Goods", 
+                    contact: "Robert Global", 
+                    email: "robert@globalgoods.com", 
+                    phone: "+1 (555) 456-7890",
+                    address: "789 Global Blvd, Global City",
+                    products: "T-Shirt, Headphones, Keyboard",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                }
+            ];
+
+            saveDataToStorage();
+        }
+
+        // Generate a new ID for a given type
+        function generateId(type) {
+            if (appData[type].length === 0) return 1;
+            return Math.max(...appData[type].map(item => item.id)) + 1;
+        }
+
+        // Initialize UI elements
+        function initializeUI() {
+            // Toggle sidebar on mobile
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('show');
+            });
+
+            // Toggle dropdown menu
+            userProfile.addEventListener('click', function() {
+                dropdownMenu.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!userProfile.contains(e.target)) {
+                    dropdownMenu.classList.remove('show');
                 }
             });
-        });
 
-        // Switch between tabs
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                const tabId = this.getAttribute('data-tab');
-                
-                // Remove active class from all tabs
-                tabs.forEach(t => t.classList.remove('active'));
-                
-                // Add active class to clicked tab
-                this.classList.add('active');
-                
-                // Hide all tab contents
-                tabContents.forEach(content => content.classList.remove('active'));
-                
-                // Show selected tab content
-                document.getElementById(tabId + '-tab').classList.add('active');
-            });
-        });
-
-        // Product Modal
-        addProductBtn.addEventListener('click', function() {
-            addProductModal.classList.add('show');
-        });
-
-        [closeProductModal, cancelProduct].forEach(btn => {
-            btn.addEventListener('click', function() {
-                addProductModal.classList.remove('show');
-            });
-        });
-
-        saveProduct.addEventListener('click', function() {
-            // Validate form
-            const productName = document.getElementById('productName').value;
-            const productSKU = document.getElementById('productSKU').value;
-            const productCategory = document.getElementById('productCategory').value;
-            const productSupplier = document.getElementById('productSupplier').value;
-            const productPurchasePrice = document.getElementById('productPurchasePrice').value;
-            const productSellingPrice = document.getElementById('productSellingPrice').value;
-            const productStock = document.getElementById('productStock').value;
-            
-            if (!productName || !productSKU || !productCategory || !productSupplier || 
-                !productPurchasePrice || !productSellingPrice || !productStock) {
-                showToast('Please fill all required fields', 'error');
-                return;
-            }
-            
-            // Generate a new product ID
-            const newId = sampleData.products.length > 0 ? 
-                Math.max(...sampleData.products.map(p => p.id)) + 1 : 1;
-            
-            // Determine status based on stock
-            const stock = parseInt(productStock);
-            const reorderLevel = parseInt(document.getElementById('productReorderLevel').value) || 10;
-            let status = "In Stock";
-            if (stock === 0) {
-                status = "Out of Stock";
-            } else if (stock <= reorderLevel) {
-                status = "Low Stock";
-            }
-            
-            // Get supplier name
-            const supplier = sampleData.suppliers.find(s => s.id == productSupplier)?.name || "Unknown";
-            
-            // Add new product
-            const newProduct = {
-                id: newId,
-                name: productName,
-                sku: productSKU,
-                category: productCategory,
-                price: parseFloat(productSellingPrice),
-                stock: stock,
-                reorderLevel: reorderLevel,
-                status: status,
-                supplier: supplier
-            };
-            
-            sampleData.products.push(newProduct);
-            
-            // Add to inventory
-            sampleData.inventory.push({
-                id: newId,
-                product: productName,
-                sku: productSKU,
-                category: productCategory,
-                stock: stock,
-                reorderLevel: reorderLevel,
-                lastUpdated: new Date().toISOString().split('T')[0]
-            });
-            
-            // Reset form
-            document.getElementById('productForm').reset();
-            
-            // Close modal
-            addProductModal.classList.remove('show');
-            
-            // Show success message
-            showToast('Product added successfully', 'success');
-            
-            // Refresh tables
-            loadProductsTable();
-            loadInventoryTable();
-            loadDashboardData();
-        });
-
-        // Inventory Modal
-        addInventoryBtn.addEventListener('click', function() {
-            addInventoryModal.classList.add('show');
-        });
-
-        [closeInventoryModal, cancelInventory].forEach(btn => {
-            btn.addEventListener('click', function() {
-                addInventoryModal.classList.remove('show');
-            });
-        });
-
-        saveInventory.addEventListener('click', function() {
-            // Validate form
-            const productId = inventoryProduct.value;
-            const quantity = document.getElementById('inventoryQuantity').value;
-            const supplier = document.getElementById('inventorySupplier').value;
-            const date = document.getElementById('inventoryDate').value;
-            
-            if (!productId || !quantity || !supplier || !date) {
-                showToast('Please fill all required fields', 'error');
-                return;
-            }
-            
-            // Find the product in inventory
-            const inventoryItem = sampleData.inventory.find(item => item.id == productId);
-            if (inventoryItem) {
-                // Update stock
-                inventoryItem.stock += parseInt(quantity);
-                inventoryItem.lastUpdated = date;
-                
-                // Update corresponding product
-                const product = sampleData.products.find(p => p.id == productId);
-                if (product) {
-                    product.stock = inventoryItem.stock;
+            // Switch between sections
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
                     
-                    // Update status based on new stock
-                    if (product.stock === 0) {
-                        product.status = "Out of Stock";
-                    } else if (product.stock <= product.reorderLevel) {
-                        product.status = "Low Stock";
-                    } else {
-                        product.status = "In Stock";
+                    // Remove active class from all links
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Hide all sections
+                    sectionContents.forEach(section => section.classList.remove('active'));
+                    
+                    // Show selected section
+                    const sectionId = this.getAttribute('data-section') + '-section';
+                    document.getElementById(sectionId).classList.add('active');
+                    
+                    // Close sidebar on mobile
+                    if (window.innerWidth < 992) {
+                        sidebar.classList.remove('show');
                     }
+                    
+                    // Load data for the section
+                    switch(this.getAttribute('data-section')) {
+                        case 'dashboard':
+                            loadDashboardData();
+                            break;
+                        case 'products':
+                            loadProductsTable();
+                            break;
+                        case 'inventory':
+                            loadInventoryTable();
+                            break;
+                        case 'sales':
+                            loadSalesTable();
+                            break;
+                        case 'suppliers':
+                            loadSuppliersTable();
+                            break;
+                        case 'reports':
+                            loadReports();
+                            break;
+                        case 'settings':
+                            loadSettings();
+                            break;
+                    }
+                });
+            });
+
+            // Switch between tabs
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all tab contents
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Show selected tab content
+                    document.getElementById(tabId + '-tab').classList.add('active');
+                    
+                    // Load data for the tab
+                    if (tabId === 'all') {
+                        loadInventoryTable();
+                    } else if (tabId === 'low') {
+                        loadLowStockTable();
+                    } else if (tabId === 'out') {
+                        loadOutOfStockTable();
+                    } else if (tabId.includes('report')) {
+                        loadReports();
+                    }
+                });
+            });
+
+            // Global search
+            globalSearch.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                if (searchTerm.length > 2) {
+                    // Find which section is active
+                    const activeSection = document.querySelector('.section-content.active');
+                    if (!activeSection) return;
+                    
+                    const sectionId = activeSection.id;
+                    
+                    // Perform search based on active section
+                    if (sectionId === 'products-section') {
+                        filterProductsTable(searchTerm);
+                    } else if (sectionId === 'inventory-section') {
+                        filterInventoryTable(searchTerm);
+                    } else if (sectionId === 'sales-section') {
+                        filterSalesTable(searchTerm);
+                    } else if (sectionId === 'suppliers-section') {
+                        filterSuppliersTable(searchTerm);
+                    }
+                } else if (searchTerm.length === 0) {
+                    // Reset tables if search is cleared
+                    const activeSection = document.querySelector('.section-content.active');
+                    if (!activeSection) return;
+                    
+                    const sectionId = activeSection.id;
+                    
+                    if (sectionId === 'products-section') {
+                        loadProductsTable();
+                    } else if (sectionId === 'inventory-section') {
+                        loadInventoryTable();
+                    } else if (sectionId === 'sales-section') {
+                        loadSalesTable();
+                    } else if (sectionId === 'suppliers-section') {
+                        loadSuppliersTable();
+                    }
+                }
+            });
+
+            // Logout button
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showConfirmModal(
+                    'Logout Confirmation',
+                    'Are you sure you want to logout?',
+                    function() {
+                        // In a real app, this would redirect to login page
+                        showToast('Logged out successfully', 'success');
+                        dropdownMenu.classList.remove('show');
+                    }
+                );
+            });
+
+            // Product Modal
+            addProductBtn.addEventListener('click', function() {
+                // Reset form
+                productForm.reset();
+                // Set default reorder level from settings
+                document.getElementById('productReorderLevel').value = appData.settings.lowStockThreshold;
+                // Show modal
+                addProductModal.classList.add('show');
+            });
+
+            [closeProductModal, cancelProduct].forEach(btn => {
+                btn.addEventListener('click', function() {
+                    addProductModal.classList.remove('show');
+                });
+            });
+
+            saveProduct.addEventListener('click', function() {
+                // Validate form
+                const productName = document.getElementById('productName').value;
+                const productSKU = document.getElementById('productSKU').value;
+                const productCategory = document.getElementById('productCategory').value;
+                const productSupplier = document.getElementById('productSupplier').value;
+                const productPurchasePrice = document.getElementById('productPurchasePrice').value;
+                const productSellingPrice = document.getElementById('productSellingPrice').value;
+                const productStock = document.getElementById('productStock').value;
+                
+                if (!productName || !productSKU || !productCategory || !productSupplier || 
+                    !productPurchasePrice || !productSellingPrice || !productStock) {
+                    showToast('Please fill all required fields', 'error');
+                    return;
+                }
+                
+                // Check if SKU already exists
+                const skuExists = appData.products.some(product => product.sku === productSKU);
+                if (skuExists) {
+                    showToast('A product with this SKU already exists', 'error');
+                    return;
+                }
+                
+                // Determine status based on stock
+                const stock = parseInt(productStock);
+                const reorderLevel = parseInt(document.getElementById('productReorderLevel').value) || appData.settings.lowStockThreshold;
+                let status = "In Stock";
+                if (stock === 0) {
+                    status = "Out of Stock";
+                } else if (stock <= reorderLevel) {
+                    status = "Low Stock";
+                }
+                
+                // Get supplier
+                const supplier = appData.suppliers.find(s => s.id == productSupplier);
+                if (!supplier) {
+                    showToast('Selected supplier not found', 'error');
+                    return;
+                }
+                
+                // Add new product
+                const newProduct = {
+                    id: generateId('products'),
+                    name: productName,
+                    sku: productSKU,
+                    category: productCategory,
+                    purchasePrice: parseFloat(productPurchasePrice),
+                    sellingPrice: parseFloat(productSellingPrice),
+                    stock: stock,
+                    reorderLevel: reorderLevel,
+                    status: status,
+                    supplierId: parseInt(productSupplier),
+                    description: document.getElementById('productDescription').value,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                appData.products.push(newProduct);
+                
+                // Reset form
+                productForm.reset();
+                
+                // Close modal
+                addProductModal.classList.remove('show');
+                
+                // Show success message
+                showToast('Product added successfully', 'success');
+                
+                // Save data
+                saveDataToStorage();
+                
+                // Refresh tables
+                loadProductsTable();
+                loadInventoryTable();
+                loadDashboardData();
+                
+                // Update product dropdowns
+                populateProductDropdowns();
+            });
+
+            // Inventory Modal
+            addInventoryBtn.addEventListener('click', function() {
+                // Reset form
+                document.getElementById('inventoryForm').reset();
+                // Set current date
+                document.getElementById('inventoryDate').valueAsDate = new Date();
+                // Show modal
+                addInventoryModal.classList.add('show');
+            });
+
+            [closeInventoryModal, cancelInventory].forEach(btn => {
+                btn.addEventListener('click', function() {
+                    addInventoryModal.classList.remove('show');
+                });
+            });
+
+            saveInventory.addEventListener('click', function() {
+                // Validate form
+                const productId = inventoryProduct.value;
+                const quantity = document.getElementById('inventoryQuantity').value;
+                const supplierId = inventorySupplier.value;
+                const date = document.getElementById('inventoryDate').value;
+                
+                if (!productId || !quantity || !supplierId || !date) {
+                    showToast('Please fill all required fields', 'error');
+                    return;
+                }
+                
+                // Find the product
+                const product = appData.products.find(p => p.id == productId);
+                if (!product) {
+                    showToast('Product not found', 'error');
+                    return;
+                }
+                
+                // Update stock
+                product.stock += parseInt(quantity);
+                product.updatedAt = new Date().toISOString();
+                
+                // Update status based on new stock
+                if (product.stock === 0) {
+                    product.status = "Out of Stock";
+                } else if (product.stock <= product.reorderLevel) {
+                    product.status = "Low Stock";
+                } else {
+                    product.status = "In Stock";
                 }
                 
                 // Reset form
@@ -2246,279 +2861,489 @@
                 // Show success message
                 showToast('Inventory updated successfully', 'success');
                 
+                // Save data
+                saveDataToStorage();
+                
                 // Refresh tables
                 loadInventoryTable();
                 loadProductsTable();
                 loadDashboardData();
-            } else {
-                showToast('Product not found in inventory', 'error');
-            }
-        });
-
-        // Sale Modal
-        addSaleBtn.addEventListener('click', function() {
-            // Clear any existing items
-            saleItemsTable.innerHTML = '';
-            // Reset totals
-            updateSaleTotals();
-            // Show modal
-            addSaleModal.classList.add('show');
-        });
-
-        [closeSaleModal, cancelSale].forEach(btn => {
-            btn.addEventListener('click', function() {
-                addSaleModal.classList.remove('show');
+                
+                // Update product dropdowns
+                populateProductDropdowns();
             });
-        });
 
-        // Add Sale Item
-        addSaleItem.addEventListener('click', function() {
-            addSaleItemModal.classList.add('show');
-        });
-
-        [closeSaleItemModal, cancelSaleItem].forEach(btn => {
-            btn.addEventListener('click', function() {
-                addSaleItemModal.classList.remove('show');
-            });
-        });
-
-        saveSaleItem.addEventListener('click', function() {
-            // Validate form
-            const productId = saleItemProduct.value;
-            const price = document.getElementById('saleItemPrice').value;
-            const quantity = document.getElementById('saleItemQuantity').value;
-            
-            if (!productId || !price || !quantity) {
-                showToast('Please fill all required fields', 'error');
-                return;
-            }
-            
-            // Find the product
-            const product = sampleData.products.find(p => p.id == productId);
-            if (!product) {
-                showToast('Product not found', 'error');
-                return;
-            }
-            
-            // Check if enough stock is available
-            if (product.stock < quantity) {
-                showToast(`Not enough stock available. Only ${product.stock} left.`, 'error');
-                return;
-            }
-            
-            // Add item to sale table
-            const total = parseFloat(price) * parseInt(quantity);
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td>${product.name}</td>
-                <td>$${parseFloat(price).toFixed(2)}</td>
-                <td>${quantity}</td>
-                <td>$${total.toFixed(2)}</td>
-                <td><button class="action-btn delete remove-sale-item"><i class="fas fa-trash"></i></button></td>
-            `;
-            saleItemsTable.appendChild(newRow);
-            
-            // Add data attributes for product ID and quantity
-            newRow.setAttribute('data-product-id', productId);
-            newRow.setAttribute('data-quantity', quantity);
-            newRow.setAttribute('data-price', price);
-            
-            // Reset form
-            document.getElementById('saleItemForm').reset();
-            
-            // Close modal
-            addSaleItemModal.classList.remove('show');
-            
-            // Update totals
-            updateSaleTotals();
-        });
-
-        // Remove sale item
-        saleItemsTable.addEventListener('click', function(e) {
-            if (e.target.closest('.remove-sale-item')) {
-                e.target.closest('tr').remove();
+            // Sale Modal
+            addSaleBtn.addEventListener('click', function() {
+                // Clear any existing items
+                saleItemsTable.innerHTML = '';
+                // Reset totals
                 updateSaleTotals();
-            }
-        });
+                // Set current date
+                document.getElementById('saleDate').valueAsDate = new Date();
+                // Show modal
+                addSaleModal.classList.add('show');
+            });
 
-        // Complete sale
-        saveSale.addEventListener('click', function() {
-            // Validate form
-            const customer = document.getElementById('saleCustomer').value;
-            const date = document.getElementById('saleDate').value;
-            const paymentMethod = document.getElementById('salePaymentMethod').value;
-            
-            if (!customer || !date) {
-                showToast('Please fill all required fields', 'error');
-                return;
-            }
-            
-            // Check if there are any items
-            const items = saleItemsTable.querySelectorAll('tr');
-            if (items.length === 0) {
-                showToast('Please add at least one item to the sale', 'error');
-                return;
-            }
-            
-            // Process each item (update stock)
-            items.forEach(item => {
-                const productId = item.getAttribute('data-product-id');
-                const quantity = parseInt(item.getAttribute('data-quantity'));
+            [closeSaleModal, cancelSale].forEach(btn => {
+                btn.addEventListener('click', function() {
+                    addSaleModal.classList.remove('show');
+                });
+            });
+
+            // Add Sale Item
+            addSaleItem.addEventListener('click', function() {
+                // Reset form
+                document.getElementById('saleItemForm').reset();
+                // Show modal
+                addSaleItemModal.classList.add('show');
+            });
+
+            [closeSaleItemModal, cancelSaleItem].forEach(btn => {
+                btn.addEventListener('click', function() {
+                    addSaleItemModal.classList.remove('show');
+                });
+            });
+
+            saveSaleItem.addEventListener('click', function() {
+                // Validate form
+                const productId = saleItemProduct.value;
+                const price = document.getElementById('saleItemPrice').value;
+                const quantity = document.getElementById('saleItemQuantity').value;
                 
-                // Find the product and update stock
-                const product = sampleData.products.find(p => p.id == productId);
-                const inventoryItem = sampleData.inventory.find(i => i.id == productId);
+                if (!productId || !price || !quantity) {
+                    showToast('Please fill all required fields', 'error');
+                    return;
+                }
                 
-                if (product && inventoryItem) {
-                    product.stock -= quantity;
-                    inventoryItem.stock -= quantity;
-                    
-                    // Update status based on new stock
-                    if (product.stock === 0) {
-                        product.status = "Out of Stock";
-                    } else if (product.stock <= product.reorderLevel) {
-                        product.status = "Low Stock";
-                    } else {
-                        product.status = "In Stock";
-                    }
+                // Find the product
+                const product = appData.products.find(p => p.id == productId);
+                if (!product) {
+                    showToast('Product not found', 'error');
+                    return;
+                }
+                
+                // Check if enough stock is available
+                if (product.stock < quantity) {
+                    showToast(`Not enough stock available. Only ${product.stock} left.`, 'error');
+                    return;
+                }
+                
+                // Add item to sale table
+                const total = parseFloat(price) * parseInt(quantity);
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>${formatCurrency(price)}</td>
+                    <td>${quantity}</td>
+                    <td>${formatCurrency(total)}</td>
+                    <td><button class="action-btn delete remove-sale-item"><i class="fas fa-trash"></i></button></td>
+                `;
+                saleItemsTable.appendChild(newRow);
+                
+                // Add data attributes for product ID and quantity
+                newRow.setAttribute('data-product-id', productId);
+                newRow.setAttribute('data-quantity', quantity);
+                newRow.setAttribute('data-price', price);
+                
+                // Reset form
+                document.getElementById('saleItemForm').reset();
+                
+                // Close modal
+                addSaleItemModal.classList.remove('show');
+                
+                // Update totals
+                updateSaleTotals();
+            });
+
+            // Remove sale item
+            saleItemsTable.addEventListener('click', function(e) {
+                if (e.target.closest('.remove-sale-item')) {
+                    e.target.closest('tr').remove();
+                    updateSaleTotals();
                 }
             });
-            
-            // Create new sale record
-            const newId = sampleData.sales.length > 0 ? 
-                Math.max(...sampleData.sales.map(s => s.id)) + 1 : 1001;
-            
-            const newSale = {
-                id: newId,
-                customer: customer,
-                date: date,
-                items: items.length,
-                total: parseFloat(document.getElementById('saleTotal').value.replace('$', '')),
-                status: "Completed",
-                paymentMethod: paymentMethod
-            };
-            
-            sampleData.sales.unshift(newSale);
-            
-            // Reset form
-            document.getElementById('saleCustomer').value = '';
-            document.getElementById('saleNotes').value = '';
-            saleItemsTable.innerHTML = '';
-            updateSaleTotals();
-            
-            // Close modal
-            addSaleModal.classList.remove('show');
-            
-            // Show success message
-            showToast('Sale completed successfully', 'success');
-            
-            // Refresh tables
-            loadSalesTable();
-            loadProductsTable();
-            loadInventoryTable();
-            loadDashboardData();
-        });
 
-        // Supplier Modal
-        addSupplierBtn.addEventListener('click', function() {
-            addSupplierModal.classList.add('show');
-        });
+            // Complete sale
+            saveSale.addEventListener('click', function() {
+                // Validate form
+                const customer = document.getElementById('saleCustomer').value;
+                const date = document.getElementById('saleDate').value;
+                const paymentMethod = document.getElementById('salePaymentMethod').value;
+                
+                if (!customer || !date || !paymentMethod) {
+                    showToast('Please fill all required fields', 'error');
+                    return;
+                }
+                
+                // Check if there are any items
+                const items = saleItemsTable.querySelectorAll('tr');
+                if (items.length === 0) {
+                    showToast('Please add at least one item to the sale', 'error');
+                    return;
+                }
+                
+                // Prepare sale items array
+                const saleItems = Array.from(items).map(item => {
+                    return {
+                        productId: parseInt(item.getAttribute('data-product-id')),
+                        name: item.cells[0].textContent,
+                        price: parseFloat(item.getAttribute('data-price')),
+                        quantity: parseInt(item.getAttribute('data-quantity'))
+                    };
+                });
+                
+                // Calculate totals
+                const subtotal = saleItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const tax = subtotal * (appData.settings.taxRate / 100);
+                const total = subtotal + tax;
+                
+                // Process each item (update stock)
+                saleItems.forEach(item => {
+                    const product = appData.products.find(p => p.id === item.productId);
+                    if (product) {
+                        product.stock -= item.quantity;
+                        product.updatedAt = new Date().toISOString();
+                        
+                        // Update status based on new stock
+                        if (product.stock === 0) {
+                            product.status = "Out of Stock";
+                        } else if (product.stock <= product.reorderLevel) {
+                            product.status = "Low Stock";
+                        } else {
+                            product.status = "In Stock";
+                        }
+                    }
+                });
+                
+                // Create new sale record
+                const newSale = {
+                    id: generateId('sales'),
+                    customer: customer,
+                    date: date,
+                    items: saleItems,
+                    subtotal: subtotal,
+                    tax: tax,
+                    total: total,
+                    paymentMethod: paymentMethod,
+                    status: "completed",
+                    notes: document.getElementById('saleNotes').value,
+                    createdAt: new Date().toISOString()
+                };
+                
+                appData.sales.unshift(newSale);
+                
+                // Reset form
+                document.getElementById('saleCustomer').value = '';
+                document.getElementById('saleNotes').value = '';
+                saleItemsTable.innerHTML = '';
+                updateSaleTotals();
+                
+                // Close modal
+                addSaleModal.classList.remove('show');
+                
+                // Show success message
+                showToast('Sale completed successfully', 'success');
+                
+                // Save data
+                saveDataToStorage();
+                
+                // Refresh tables
+                loadSalesTable();
+                loadProductsTable();
+                loadInventoryTable();
+                loadDashboardData();
+                
+                // Update product dropdowns
+                populateProductDropdowns();
+            });
 
-        [closeSupplierModal, cancelSupplier].forEach(btn => {
-            btn.addEventListener('click', function() {
+            // Supplier Modal
+            addSupplierBtn.addEventListener('click', function() {
+                // Reset form
+                supplierForm.reset();
+                // Show modal
+                addSupplierModal.classList.add('show');
+            });
+
+            [closeSupplierModal, cancelSupplier].forEach(btn => {
+                btn.addEventListener('click', function() {
+                    addSupplierModal.classList.remove('show');
+                });
+            });
+
+            saveSupplier.addEventListener('click', function() {
+                // Validate form
+                const name = document.getElementById('supplierName').value;
+                
+                if (!name) {
+                    showToast('Please fill all required fields', 'error');
+                    return;
+                }
+                
+                // Add new supplier
+                const newSupplier = {
+                    id: generateId('suppliers'),
+                    name: name,
+                    contact: document.getElementById('supplierContact').value,
+                    email: document.getElementById('supplierEmail').value,
+                    phone: document.getElementById('supplierPhone').value,
+                    address: document.getElementById('supplierAddress').value,
+                    products: document.getElementById('supplierProducts').value,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                appData.suppliers.push(newSupplier);
+                
+                // Reset form
+                supplierForm.reset();
+                
+                // Close modal
                 addSupplierModal.classList.remove('show');
+                
+                // Show success message
+                showToast('Supplier added successfully', 'success');
+                
+                // Save data
+                saveDataToStorage();
+                
+                // Refresh table
+                loadSuppliersTable();
+                
+                // Update supplier dropdowns
+                populateSupplierDropdowns();
             });
-        });
 
-        saveSupplier.addEventListener('click', function() {
-            // Validate form
-            const name = document.getElementById('supplierName').value;
-            
-            if (!name) {
-                showToast('Please fill all required fields', 'error');
-                return;
-            }
-            
-            // Generate new supplier ID
-            const newId = sampleData.suppliers.length > 0 ? 
-                Math.max(...sampleData.suppliers.map(s => s.id)) + 1 : 1;
-            
-            // Add new supplier
-            const newSupplier = {
-                id: newId,
-                name: name,
-                contact: document.getElementById('supplierContact').value,
-                email: document.getElementById('supplierEmail').value,
-                phone: document.getElementById('supplierPhone').value,
-                address: document.getElementById('supplierAddress').value,
-                products: document.getElementById('supplierProducts').value
-            };
-            
-            sampleData.suppliers.push(newSupplier);
-            
-            // Reset form
-            document.getElementById('supplierForm').reset();
-            
-            // Close modal
-            addSupplierModal.classList.remove('show');
-            
-            // Show success message
-            showToast('Supplier added successfully', 'success');
-            
-            // Refresh table
-            loadSuppliersTable();
-        });
+            // Edit Supplier Modal
+            [closeEditSupplierModal, cancelEditSupplier].forEach(btn => {
+                btn.addEventListener('click', function() {
+                    editSupplierModal.classList.remove('show');
+                });
+            });
 
-        // User Modal
-        addUserBtn.addEventListener('click', function() {
-            addUserModal.classList.add('show');
-        });
+            updateSupplier.addEventListener('click', function() {
+                // Validate form
+                const name = document.getElementById('editSupplierName').value;
+                const supplierId = document.getElementById('editSupplierId').value;
+                
+                if (!name || !supplierId) {
+                    showToast('Please fill all required fields', 'error');
+                    return;
+                }
+                
+                // Find the supplier
+                const supplierIndex = appData.suppliers.findIndex(s => s.id == supplierId);
+                if (supplierIndex === -1) {
+                    showToast('Supplier not found', 'error');
+                    return;
+                }
+                
+                // Update supplier
+                appData.suppliers[supplierIndex] = {
+                    ...appData.suppliers[supplierIndex],
+                    name: name,
+                    contact: document.getElementById('editSupplierContact').value,
+                    email: document.getElementById('editSupplierEmail').value,
+                    phone: document.getElementById('editSupplierPhone').value,
+                    address: document.getElementById('editSupplierAddress').value,
+                    products: document.getElementById('editSupplierProducts').value,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // Reset form
+                editSupplierForm.reset();
+                
+                // Close modal
+                editSupplierModal.classList.remove('show');
+                
+                // Show success message
+                showToast('Supplier updated successfully', 'success');
+                
+                // Save data
+                saveDataToStorage();
+                
+                // Refresh table
+                loadSuppliersTable();
+                
+                // Update supplier dropdowns
+                populateSupplierDropdowns();
+            });
 
-        [closeUserModal, cancelUser].forEach(btn => {
-            btn.addEventListener('click', function() {
+            // User Modal
+            addUserBtn.addEventListener('click', function() {
+                // Reset form
+                userForm.reset();
+                // Show modal
+                addUserModal.classList.add('show');
+            });
+
+            [closeUserModal, cancelUser].forEach(btn => {
+                btn.addEventListener('click', function() {
+                    addUserModal.classList.remove('show');
+                });
+            });
+
+            saveUser.addEventListener('click', function() {
+                // Validate form
+                const name = document.getElementById('userName').value;
+                const email = document.getElementById('userEmail').value;
+                const password = document.getElementById('userPassword').value;
+                const confirmPassword = document.getElementById('userConfirmPassword').value;
+                const role = document.getElementById('userRole').value;
+                const status = document.getElementById('userStatus').value;
+                
+                if (!name || !email || !password || !confirmPassword || !role || !status) {
+                    showToast('Please fill all required fields', 'error');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    showToast('Passwords do not match', 'error');
+                    return;
+                }
+                
+                // Check if email already exists
+                const emailExists = appData.users.some(user => user.email === email);
+                if (emailExists) {
+                    showToast('A user with this email already exists', 'error');
+                    return;
+                }
+                
+                // Add new user (in a real app, password would be hashed)
+                const newUser = {
+                    id: generateId('users'),
+                    name: name,
+                    email: email,
+                    password: password, // Note: In a real app, never store plain text passwords
+                    role: role,
+                    status: status,
+                    lastLogin: null,
+                    createdAt: new Date().toISOString()
+                };
+                
+                appData.users.push(newUser);
+                
+                // Reset form
+                userForm.reset();
+                
+                // Close modal
                 addUserModal.classList.remove('show');
+                
+                // Show success message
+                showToast('User added successfully', 'success');
+                
+                // Save data
+                saveDataToStorage();
+                
+                // Refresh table
+                loadUsersTable();
             });
-        });
 
-        saveUser.addEventListener('click', function() {
-            // Validate form
-            const name = document.getElementById('userName').value;
-            const email = document.getElementById('userEmail').value;
-            const password = document.getElementById('userPassword').value;
-            const confirmPassword = document.getElementById('userConfirmPassword').value;
-            const role = document.getElementById('userRole').value;
-            const status = document.getElementById('userStatus').value;
-            
-            if (!name || !email || !password || !confirmPassword || !role || !status) {
-                showToast('Please fill all required fields', 'error');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                showToast('Passwords do not match', 'error');
-                return;
-            }
-            
-            // In a real app, you would send this data to your backend
-            // For this demo, we'll just show a success message
-            
-            // Reset form
-            document.getElementById('userForm').reset();
-            
-            // Close modal
-            addUserModal.classList.remove('show');
-            
-            // Show success message
-            showToast('User added successfully', 'success');
-        });
+            // Settings form
+            settingsForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Update settings
+                appData.settings = {
+                    businessName: businessName.value,
+                    businessAddress: businessAddress.value,
+                    currency: currency.value,
+                    lowStockThreshold: parseInt(lowStockThreshold.value),
+                    taxRate: parseFloat(taxRate.value)
+                };
+                
+                // Save data
+                saveDataToStorage();
+                
+                // Show success message
+                showToast('Settings saved successfully', 'success');
+            });
 
-        // Helper Functions
+            // View Sale Modal
+            [closeViewSaleModal, closeViewSale].forEach(btn => {
+                btn.addEventListener('click', function() {
+                    viewSaleModal.classList.remove('show');
+                });
+            });
+
+            // Confirmation Modal
+            [closeConfirmModal, cancelConfirm].forEach(btn => {
+                btn.addEventListener('click', function() {
+                    confirmModal.classList.remove('show');
+                });
+            });
+
+            confirmAction.addEventListener('click', function() {
+                if (deleteCallback) {
+                    deleteCallback();
+                    deleteCallback = null;
+                }
+                confirmModal.classList.remove('show');
+            });
+
+            // Product search and filter
+            productSearch.addEventListener('input', function() {
+                filterProductsTable(this.value.toLowerCase());
+            });
+
+            productCategoryFilter.addEventListener('change', function() {
+                filterProductsTable(productSearch.value.toLowerCase());
+            });
+
+            productStatusFilter.addEventListener('change', function() {
+                filterProductsTable(productSearch.value.toLowerCase());
+            });
+
+            // Inventory search and filter
+            inventorySearch.addEventListener('input', function() {
+                filterInventoryTable(this.value.toLowerCase());
+            });
+
+            inventoryCategoryFilter.addEventListener('change', function() {
+                filterInventoryTable(inventorySearch.value.toLowerCase());
+            });
+
+            // Sales search and filter
+            salesSearch.addEventListener('input', function() {
+                filterSalesTable(this.value.toLowerCase());
+            });
+
+            salesDateFilter.addEventListener('change', function() {
+                filterSalesTable(salesSearch.value.toLowerCase());
+            });
+
+            salesStatusFilter.addEventListener('change', function() {
+                filterSalesTable(salesSearch.value.toLowerCase());
+            });
+
+            // Supplier search
+            supplierSearch.addEventListener('input', function() {
+                filterSuppliersTable(this.value.toLowerCase());
+            });
+
+            // Report export buttons
+            exportSalesReport.addEventListener('click', function() {
+                exportToCSV('sales_report.csv', getSalesReportData());
+            });
+
+            exportInventoryReport.addEventListener('click', function() {
+                exportToCSV('inventory_report.csv', getInventoryReportData());
+            });
+
+            exportProfitReport.addEventListener('click', function() {
+                exportToCSV('profit_report.csv', getProfitReportData());
+            });
+        }
+
+        // Load dashboard data
         function loadDashboardData() {
             // Calculate stats
-            const totalProducts = sampleData.products.length;
-            const totalStock = sampleData.products.reduce((sum, product) => sum + product.stock, 0);
-            const todaySales = sampleData.sales.filter(sale => sale.date === new Date().toISOString().split('T')[0]).length;
-            const lowStock = sampleData.products.filter(product => product.status === "Low Stock").length;
+            const totalProducts = appData.products.length;
+            const totalStock = appData.products.reduce((sum, product) => sum + product.stock, 0);
+            const today = new Date().toISOString().split('T')[0];
+            const todaySales = appData.sales.filter(sale => sale.date === today).length;
+            const lowStock = appData.products.filter(product => product.status === "Low Stock").length;
             
             // Update stats cards
             document.getElementById('totalProducts').textContent = totalProducts;
@@ -2530,14 +3355,14 @@
             const recentSalesTable = document.getElementById('recentSalesTable');
             recentSalesTable.innerHTML = '';
             
-            sampleData.sales.slice(0, 5).forEach(sale => {
+            appData.sales.slice(0, 5).forEach(sale => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>#${sale.id}</td>
-                    <td>${sale.items} items</td>
-                    <td>${sale.items}</td>
-                    <td>$${sale.total.toFixed(2)}</td>
-                    <td>${sale.date}</td>
+                    <td>${sale.customer}</td>
+                    <td>${sale.items.length}</td>
+                    <td>${formatCurrency(sale.total)}</td>
+                    <td>${formatDate(sale.date)}</td>
                 `;
                 recentSalesTable.appendChild(row);
             });
@@ -2546,186 +3371,1105 @@
             const lowStockTable = document.getElementById('lowStockTable');
             lowStockTable.innerHTML = '';
             
-            sampleData.products.filter(product => product.status === "Low Stock" || product.status === "Out of Stock")
+            appData.products.filter(product => product.status === "Low Stock" || product.status === "Out of Stock")
                 .slice(0, 5).forEach(product => {
+                const supplier = appData.suppliers.find(s => s.id === product.supplierId);
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${product.name}</td>
                     <td>${product.stock}</td>
                     <td>
-                        <button class="btn btn-primary btn-sm">Reorder</button>
+                        <button class="btn btn-primary btn-sm reorder-btn" data-product-id="${product.id}">
+                            <i class="fas fa-truck"></i> Reorder
+                        </button>
                     </td>
                 `;
                 lowStockTable.appendChild(row);
             });
+
+            // Add event listeners to reorder buttons
+            document.querySelectorAll('.reorder-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product-id');
+                    const product = appData.products.find(p => p.id == productId);
+                    if (product) {
+                        // Pre-fill inventory form with this product
+                        document.getElementById('inventoryForm').reset();
+                        document.getElementById('inventoryProduct').value = product.id;
+                        document.getElementById('inventoryQuantity').value = product.reorderLevel * 2; // Suggest ordering double the reorder level
+                        document.getElementById('inventoryDate').valueAsDate = new Date();
+                        
+                        // Show inventory modal
+                        addInventoryModal.classList.add('show');
+                    }
+                });
+            });
         }
 
-        function loadProductsTable() {
+        // Load products table
+        function loadProductsTable(page = 1, searchTerm = '', category = '', status = '') {
             const productsTable = document.getElementById('productsTable');
             productsTable.innerHTML = '';
             
-            sampleData.products.forEach(product => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${product.id}</td>
-                    <td>${product.name}</td>
-                    <td>${product.category}</td>
-                    <td>$${product.price.toFixed(2)}</td>
-                    <td>${product.stock}</td>
-                    <td>
-                        <span class="badge ${
-                            product.status === "In Stock" ? "badge-success" : 
-                            product.status === "Low Stock" ? "badge-warning" : "badge-danger"
-                        }">${product.status}</span>
-                    </td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn delete"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </td>
+            // Filter products
+            let filteredProducts = [...appData.products];
+            
+            if (searchTerm) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.name.toLowerCase().includes(searchTerm) || 
+                    product.sku.toLowerCase().includes(searchTerm) ||
+                    product.category.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (category) {
+                filteredProducts = filteredProducts.filter(product => product.category === category);
+            }
+            
+            if (status) {
+                filteredProducts = filteredProducts.filter(product => product.status === status);
+            }
+            
+            // Pagination
+            const itemsPerPage = 10;
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+            const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+            
+            // Display products
+            if (paginatedProducts.length === 0) {
+                productsTable.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <p>No products found</p>
+                        </td>
+                    </tr>
                 `;
-                productsTable.appendChild(row);
+            } else {
+                paginatedProducts.forEach(product => {
+                    const supplier = appData.suppliers.find(s => s.id === product.supplierId);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.id}</td>
+                        <td>${product.name}</td>
+                        <td>${product.category}</td>
+                        <td>${formatCurrency(product.sellingPrice)}</td>
+                        <td>${product.stock}</td>
+                        <td>
+                            <span class="badge ${
+                                product.status === "In Stock" ? "badge-success" : 
+                                product.status === "Low Stock" ? "badge-warning" : "badge-danger"
+                            }">${product.status}</span>
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn edit edit-product" data-id="${product.id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete delete-product" data-id="${product.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    productsTable.appendChild(row);
+                });
+            }
+            
+            // Generate pagination
+            generatePagination('productsPagination', page, totalPages, (newPage) => {
+                loadProductsTable(newPage, searchTerm, category, status);
+            });
+            
+            // Add event listeners to edit buttons
+            document.querySelectorAll('.edit-product').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-id');
+                    const product = appData.products.find(p => p.id == productId);
+                    if (product) {
+                        // Fill edit form
+                        document.getElementById('editProductId').value = product.id;
+                        document.getElementById('editProductName').value = product.name;
+                        document.getElementById('editProductSKU').value = product.sku;
+                        document.getElementById('editProductCategory').value = product.category;
+                        document.getElementById('editProductSupplier').value = product.supplierId;
+                        document.getElementById('editProductPurchasePrice').value = product.purchasePrice;
+                        document.getElementById('editProductSellingPrice').value = product.sellingPrice;
+                        document.getElementById('editProductStock').value = product.stock;
+                        document.getElementById('editProductReorderLevel').value = product.reorderLevel;
+                        document.getElementById('editProductDescription').value = product.description || '';
+                        
+                        // Show edit modal
+                        editProductModal.classList.add('show');
+                    }
+                });
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-product').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-id');
+                    const product = appData.products.find(p => p.id == productId);
+                    if (product) {
+                        showConfirmModal(
+                            'Delete Product',
+                            `Are you sure you want to delete "${product.name}"? This action cannot be undone.`,
+                            function() {
+                                // Remove product
+                                appData.products = appData.products.filter(p => p.id != productId);
+                                
+                                // Remove any inventory records for this product
+                                // Note: In this simple app, inventory is tied to products
+                                
+                                // Save data
+                                saveDataToStorage();
+                                
+                                // Refresh tables
+                                loadProductsTable();
+                                loadInventoryTable();
+                                loadDashboardData();
+                                
+                                // Show success message
+                                showToast('Product deleted successfully', 'success');
+                            }
+                        );
+                    }
+                });
             });
         }
 
-        function loadInventoryTable() {
+        // Filter products table
+        function filterProductsTable(searchTerm = '') {
+            const category = productCategoryFilter.value;
+            const status = productStatusFilter.value;
+            loadProductsTable(1, searchTerm, category, status);
+        }
+
+        // Load inventory table
+        function loadInventoryTable(page = 1, searchTerm = '', category = '') {
             const inventoryTable = document.getElementById('inventoryTable');
-            const lowInventoryTable = document.getElementById('lowInventoryTable');
-            const outInventoryTable = document.getElementById('outInventoryTable');
-            
             inventoryTable.innerHTML = '';
+            
+            // Filter inventory (products)
+            let filteredProducts = [...appData.products];
+            
+            if (searchTerm) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.name.toLowerCase().includes(searchTerm) || 
+                    product.sku.toLowerCase().includes(searchTerm) ||
+                    product.category.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (category) {
+                filteredProducts = filteredProducts.filter(product => product.category === category);
+            }
+            
+            // Pagination
+            const itemsPerPage = 10;
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+            const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+            
+            // Display inventory
+            if (paginatedProducts.length === 0) {
+                inventoryTable.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <i class="fas fa-warehouse"></i>
+                            <p>No inventory items found</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                paginatedProducts.forEach(product => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.name}</td>
+                        <td>${product.sku}</td>
+                        <td>${product.category}</td>
+                        <td>${product.stock}</td>
+                        <td>${product.reorderLevel}</td>
+                        <td>${formatDate(product.updatedAt)}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn edit edit-inventory" data-id="${product.id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    inventoryTable.appendChild(row);
+                });
+            }
+            
+            // Generate pagination
+            generatePagination('inventoryPagination', page, totalPages, (newPage) => {
+                loadInventoryTable(newPage, searchTerm, category);
+            });
+            
+            // Add event listeners to edit buttons
+            document.querySelectorAll('.edit-inventory').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-id');
+                    const product = appData.products.find(p => p.id == productId);
+                    if (product) {
+                        // Fill edit form (using product modal)
+                        document.getElementById('editProductId').value = product.id;
+                        document.getElementById('editProductName').value = product.name;
+                        document.getElementById('editProductSKU').value = product.sku;
+                        document.getElementById('editProductCategory').value = product.category;
+                        document.getElementById('editProductSupplier').value = product.supplierId;
+                        document.getElementById('editProductPurchasePrice').value = product.purchasePrice;
+                        document.getElementById('editProductSellingPrice').value = product.sellingPrice;
+                        document.getElementById('editProductStock').value = product.stock;
+                        document.getElementById('editProductReorderLevel').value = product.reorderLevel;
+                        document.getElementById('editProductDescription').value = product.description || '';
+                        
+                        // Show edit modal
+                        editProductModal.classList.add('show');
+                    }
+                });
+            });
+        }
+
+        // Filter inventory table
+        function filterInventoryTable(searchTerm = '') {
+            const category = inventoryCategoryFilter.value;
+            loadInventoryTable(1, searchTerm, category);
+        }
+
+        // Load low stock table
+        function loadLowStockTable() {
+            const lowInventoryTable = document.getElementById('lowInventoryTable');
             lowInventoryTable.innerHTML = '';
+            
+            const lowStockProducts = appData.products.filter(product => product.status === "Low Stock");
+            
+            if (lowStockProducts.length === 0) {
+                lowInventoryTable.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-check-circle"></i>
+                            <p>No low stock items</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                lowStockProducts.forEach(product => {
+                    const supplier = appData.suppliers.find(s => s.id === product.supplierId);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.name}</td>
+                        <td>${product.sku}</td>
+                        <td>${product.stock}</td>
+                        <td>${product.reorderLevel}</td>
+                        <td>${supplier ? supplier.name : 'Unknown'}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm reorder-btn" data-product-id="${product.id}">
+                                <i class="fas fa-truck"></i> Reorder
+                            </button>
+                        </td>
+                    `;
+                    lowInventoryTable.appendChild(row);
+                });
+            }
+            
+            // Add event listeners to reorder buttons
+            document.querySelectorAll('.reorder-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product-id');
+                    const product = appData.products.find(p => p.id == productId);
+                    if (product) {
+                        // Pre-fill inventory form with this product
+                        document.getElementById('inventoryForm').reset();
+                        document.getElementById('inventoryProduct').value = product.id;
+                        document.getElementById('inventoryQuantity').value = product.reorderLevel * 2; // Suggest ordering double the reorder level
+                        document.getElementById('inventoryDate').valueAsDate = new Date();
+                        
+                        // Show inventory modal
+                        addInventoryModal.classList.add('show');
+                    }
+                });
+            });
+        }
+
+        // Load out of stock table
+        function loadOutOfStockTable() {
+            const outInventoryTable = document.getElementById('outInventoryTable');
             outInventoryTable.innerHTML = '';
             
-            sampleData.inventory.forEach(item => {
-                const product = sampleData.products.find(p => p.id === item.id);
-                const status = product ? product.status : "Unknown";
-                
-                // All items table
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.product}</td>
-                    <td>${item.sku}</td>
-                    <td>${item.category}</td>
-                    <td>${item.stock}</td>
-                    <td>${item.reorderLevel}</td>
-                    <td>${item.lastUpdated}</td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                        </div>
-                    </td>
+            const outOfStockProducts = appData.products.filter(product => product.status === "Out of Stock");
+            
+            if (outOfStockProducts.length === 0) {
+                outInventoryTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fas fa-check-circle"></i>
+                            <p>No out of stock items</p>
+                        </td>
+                    </tr>
                 `;
-                inventoryTable.appendChild(row);
-                
-                // Low stock table
-                if (status === "Low Stock") {
-                    const lowRow = document.createElement('tr');
-                    lowRow.innerHTML = `
-                        <td>${item.product}</td>
-                        <td>${item.sku}</td>
-                        <td>${item.stock}</td>
-                        <td>${item.reorderLevel}</td>
-                        <td>${product.supplier}</td>
+            } else {
+                outOfStockProducts.forEach(product => {
+                    const supplier = appData.suppliers.find(s => s.id === product.supplierId);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.name}</td>
+                        <td>${product.sku}</td>
+                        <td>${product.stock}</td>
+                        <td>${supplier ? supplier.name : 'Unknown'}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm">Reorder</button>
+                            <button class="btn btn-primary btn-sm reorder-btn" data-product-id="${product.id}">
+                                <i class="fas fa-truck"></i> Reorder
+                            </button>
                         </td>
                     `;
-                    lowInventoryTable.appendChild(lowRow);
-                }
-                
-                // Out of stock table
-                if (status === "Out of Stock") {
-                    const outRow = document.createElement('tr');
-                    outRow.innerHTML = `
-                        <td>${item.product}</td>
-                        <td>${item.sku}</td>
-                        <td>${item.stock}</td>
-                        <td>${product.supplier}</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm">Reorder</button>
-                        </td>
-                    `;
-                    outInventoryTable.appendChild(outRow);
-                }
+                    outInventoryTable.appendChild(row);
+                });
+            }
+            
+            // Add event listeners to reorder buttons
+            document.querySelectorAll('.reorder-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product-id');
+                    const product = appData.products.find(p => p.id == productId);
+                    if (product) {
+                        // Pre-fill inventory form with this product
+                        document.getElementById('inventoryForm').reset();
+                        document.getElementById('inventoryProduct').value = product.id;
+                        document.getElementById('inventoryQuantity').value = product.reorderLevel * 2; // Suggest ordering double the reorder level
+                        document.getElementById('inventoryDate').valueAsDate = new Date();
+                        
+                        // Show inventory modal
+                        addInventoryModal.classList.add('show');
+                    }
+                });
             });
         }
 
-        function loadSalesTable() {
+        // Load sales table
+        function loadSalesTable(page = 1, searchTerm = '', dateFilter = '', statusFilter = '') {
             const salesTable = document.getElementById('salesTable');
             salesTable.innerHTML = '';
             
-            sampleData.sales.forEach(sale => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>#${sale.id}</td>
-                    <td>${sale.customer}</td>
-                    <td>${sale.date}</td>
-                    <td>${sale.items}</td>
-                    <td>$${sale.total.toFixed(2)}</td>
-                    <td>
-                        <span class="badge ${
-                            sale.status === "Completed" ? "badge-success" : 
-                            sale.status === "Pending" ? "badge-warning" : "badge-danger"
-                        }">${sale.status}</span>
-                    </td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn delete"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </td>
+            // Filter sales
+            let filteredSales = [...appData.sales];
+            
+            if (searchTerm) {
+                filteredSales = filteredSales.filter(sale => 
+                    sale.customer.toLowerCase().includes(searchTerm) || 
+                    sale.id.toString().includes(searchTerm)
+                );
+            }
+            
+            if (dateFilter) {
+                const today = new Date();
+                let startDate;
+                
+                switch(dateFilter) {
+                    case 'today':
+                        startDate = new Date(today);
+                        break;
+                    case 'week':
+                        startDate = new Date(today.setDate(today.getDate() - 7));
+                        break;
+                    case 'month':
+                        startDate = new Date(today.setMonth(today.getMonth() - 1));
+                        break;
+                }
+                
+                filteredSales = filteredSales.filter(sale => {
+                    const saleDate = new Date(sale.date);
+                    return saleDate >= startDate;
+                });
+            }
+            
+            if (statusFilter) {
+                filteredSales = filteredSales.filter(sale => sale.status === statusFilter);
+            }
+            
+            // Pagination
+            const itemsPerPage = 10;
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedSales = filteredSales.slice(startIndex, endIndex);
+            const totalPages = Math.ceil(filteredSales.length / itemsPerPage);
+            
+            // Display sales
+            if (paginatedSales.length === 0) {
+                salesTable.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <i class="fas fa-shopping-cart"></i>
+                            <p>No sales found</p>
+                        </td>
+                    </tr>
                 `;
-                salesTable.appendChild(row);
+            } else {
+                paginatedSales.forEach(sale => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>#${sale.id}</td>
+                        <td>${sale.customer}</td>
+                        <td>${formatDate(sale.date)}</td>
+                        <td>${sale.items.length}</td>
+                        <td>${formatCurrency(sale.total)}</td>
+                        <td>
+                            <span class="badge ${
+                                sale.status === "completed" ? "badge-success" : 
+                                sale.status === "pending" ? "badge-warning" : "badge-danger"
+                            }">${sale.status.charAt(0).toUpperCase() + sale.status.slice(1)}</span>
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn view view-sale" data-id="${sale.id}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn delete delete-sale" data-id="${sale.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    salesTable.appendChild(row);
+                });
+            }
+            
+            // Generate pagination
+            generatePagination('salesPagination', page, totalPages, (newPage) => {
+                loadSalesTable(newPage, searchTerm, dateFilter, statusFilter);
+            });
+            
+            // Add event listeners to view buttons
+            document.querySelectorAll('.view-sale').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const saleId = this.getAttribute('data-id');
+                    const sale = appData.sales.find(s => s.id == saleId);
+                    if (sale) {
+                        // Fill view form
+                        document.getElementById('viewSaleId').value = sale.id;
+                        document.getElementById('viewSaleCustomer').value = sale.customer;
+                        document.getElementById('viewSaleDate').value = formatDate(sale.date);
+                        document.getElementById('viewSaleSubtotal').value = formatCurrency(sale.subtotal);
+                        document.getElementById('viewSaleTax').value = formatCurrency(sale.tax);
+                        document.getElementById('viewSaleTotal').value = formatCurrency(sale.total);
+                        document.getElementById('viewSalePaymentMethod').value = 
+                            sale.paymentMethod.charAt(0).toUpperCase() + sale.paymentMethod.slice(1);
+                        document.getElementById('viewSaleStatus').value = 
+                            sale.status.charAt(0).toUpperCase() + sale.status.slice(1);
+                        document.getElementById('viewSaleNotes').value = sale.notes || '';
+                        
+                        // Fill items table
+                        const itemsTable = document.getElementById('viewSaleItemsTable');
+                        itemsTable.innerHTML = '';
+                        
+                        sale.items.forEach(item => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${item.name}</td>
+                                <td>${formatCurrency(item.price)}</td>
+                                <td>${item.quantity}</td>
+                                <td>${formatCurrency(item.price * item.quantity)}</td>
+                            `;
+                            itemsTable.appendChild(row);
+                        });
+                        
+                        // Show view modal
+                        viewSaleModal.classList.add('show');
+                    }
+                });
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-sale').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const saleId = this.getAttribute('data-id');
+                    const sale = appData.sales.find(s => s.id == saleId);
+                    if (sale) {
+                        showConfirmModal(
+                            'Delete Sale',
+                            `Are you sure you want to delete sale #${sale.id}? This action cannot be undone.`,
+                            function() {
+                                // Remove sale
+                                appData.sales = appData.sales.filter(s => s.id != saleId);
+                                
+                                // Save data
+                                saveDataToStorage();
+                                
+                                // Refresh table
+                                loadSalesTable();
+                                loadDashboardData();
+                                
+                                // Show success message
+                                showToast('Sale deleted successfully', 'success');
+                            }
+                        );
+                    }
+                });
             });
         }
 
-        function loadSuppliersTable() {
+        // Filter sales table
+        function filterSalesTable(searchTerm = '') {
+            const dateFilter = salesDateFilter.value;
+            const statusFilter = salesStatusFilter.value;
+            loadSalesTable(1, searchTerm, dateFilter, statusFilter);
+        }
+
+        // Load suppliers table
+        function loadSuppliersTable(page = 1, searchTerm = '') {
             const suppliersTable = document.getElementById('suppliersTable');
             suppliersTable.innerHTML = '';
             
-            sampleData.suppliers.forEach(supplier => {
+            // Filter suppliers
+            let filteredSuppliers = [...appData.suppliers];
+            
+            if (searchTerm) {
+                filteredSuppliers = filteredSuppliers.filter(supplier => 
+                    supplier.name.toLowerCase().includes(searchTerm) || 
+                    supplier.contact.toLowerCase().includes(searchTerm) ||
+                    supplier.email.toLowerCase().includes(searchTerm) ||
+                    supplier.products.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Pagination
+            const itemsPerPage = 10;
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedSuppliers = filteredSuppliers.slice(startIndex, endIndex);
+            const totalPages = Math.ceil(filteredSuppliers.length / itemsPerPage);
+            
+            // Display suppliers
+            if (paginatedSuppliers.length === 0) {
+                suppliersTable.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-truck"></i>
+                            <p>No suppliers found</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                paginatedSuppliers.forEach(supplier => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${supplier.id}</td>
+                        <td>${supplier.name}</td>
+                        <td>${supplier.contact || '-'}</td>
+                        <td>${supplier.email || '-'}</td>
+                        <td>${supplier.products || '-'}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn edit edit-supplier" data-id="${supplier.id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete delete-supplier" data-id="${supplier.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    suppliersTable.appendChild(row);
+                });
+            }
+            
+            // Generate pagination
+            generatePagination('suppliersPagination', page, totalPages, (newPage) => {
+                loadSuppliersTable(newPage, searchTerm);
+            });
+            
+            // Add event listeners to edit buttons
+            document.querySelectorAll('.edit-supplier').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const supplierId = this.getAttribute('data-id');
+                    const supplier = appData.suppliers.find(s => s.id == supplierId);
+                    if (supplier) {
+                        // Fill edit form
+                        document.getElementById('editSupplierId').value = supplier.id;
+                        document.getElementById('editSupplierName').value = supplier.name;
+                        document.getElementById('editSupplierContact').value = supplier.contact || '';
+                        document.getElementById('editSupplierEmail').value = supplier.email || '';
+                        document.getElementById('editSupplierPhone').value = supplier.phone || '';
+                        document.getElementById('editSupplierAddress').value = supplier.address || '';
+                        document.getElementById('editSupplierProducts').value = supplier.products || '';
+                        
+                        // Show edit modal
+                        editSupplierModal.classList.add('show');
+                    }
+                });
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-supplier').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const supplierId = this.getAttribute('data-id');
+                    const supplier = appData.suppliers.find(s => s.id == supplierId);
+                    if (supplier) {
+                        // Check if any products are associated with this supplier
+                        const productsUsingSupplier = appData.products.filter(p => p.supplierId == supplierId);
+                        
+                        if (productsUsingSupplier.length > 0) {
+                            showToast(`Cannot delete supplier. ${productsUsingSupplier.length} product(s) are associated with this supplier.`, 'error');
+                            return;
+                        }
+                        
+                        showConfirmModal(
+                            'Delete Supplier',
+                            `Are you sure you want to delete "${supplier.name}"? This action cannot be undone.`,
+                            function() {
+                                // Remove supplier
+                                appData.suppliers = appData.suppliers.filter(s => s.id != supplierId);
+                                
+                                // Save data
+                                saveDataToStorage();
+                                
+                                // Refresh table
+                                loadSuppliersTable();
+                                
+                                // Update supplier dropdowns
+                                populateSupplierDropdowns();
+                                
+                                // Show success message
+                                showToast('Supplier deleted successfully', 'success');
+                            }
+                        );
+                    }
+                });
+            });
+        }
+
+        // Filter suppliers table
+        function filterSuppliersTable(searchTerm = '') {
+            loadSuppliersTable(1, searchTerm);
+        }
+
+        // Load users table
+        function loadUsersTable() {
+            const usersTable = document.getElementById('usersTable');
+            usersTable.innerHTML = '';
+            
+            appData.users.forEach(user => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${supplier.id}</td>
-                    <td>${supplier.name}</td>
-                    <td>${supplier.contact}</td>
-                    <td>${supplier.email}</td>
-                    <td>${supplier.products}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</td>
+                    <td>${user.lastLogin ? formatDate(user.lastLogin) : 'Never'}</td>
+                    <td><span class="badge ${user.status === "active" ? "badge-success" : "badge-danger"}">
+                        ${user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                    </span></td>
                     <td>
                         <div class="action-btns">
-                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                            <button class="action-btn edit edit-user" data-id="${user.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${user.id !== 1 ? `
+                            <button class="action-btn delete delete-user" data-id="${user.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            ` : ''}
                         </div>
                     </td>
                 `;
-                suppliersTable.appendChild(row);
+                usersTable.appendChild(row);
+            });
+            
+            // Add event listeners to edit buttons
+            document.querySelectorAll('.edit-user').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-id');
+                    const user = appData.users.find(u => u.id == userId);
+                    if (user) {
+                        // Fill edit form (using add user modal)
+                        document.getElementById('userName').value = user.name;
+                        document.getElementById('userEmail').value = user.email;
+                        document.getElementById('userRole').value = user.role;
+                        document.getElementById('userStatus').value = user.status;
+                        
+                        // Clear password fields
+                        document.getElementById('userPassword').value = '';
+                        document.getElementById('userConfirmPassword').value = '';
+                        
+                        // Change modal title
+                        document.querySelector('#addUserModal .modal-header h3').textContent = 'Edit User';
+                        
+                        // Change save button text
+                        document.getElementById('saveUser').textContent = 'Update User';
+                        
+                        // TODO: In a real app, you would need to handle the update logic
+                        
+                        // Show modal
+                        addUserModal.classList.add('show');
+                    }
+                });
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-user').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-id');
+                    const user = appData.users.find(u => u.id == userId);
+                    if (user) {
+                        showConfirmModal(
+                            'Delete User',
+                            `Are you sure you want to delete user "${user.name}"? This action cannot be undone.`,
+                            function() {
+                                // Remove user (except the first admin user)
+                                if (user.id !== 1) {
+                                    appData.users = appData.users.filter(u => u.id != userId);
+                                    
+                                    // Save data
+                                    saveDataToStorage();
+                                    
+                                    // Refresh table
+                                    loadUsersTable();
+                                    
+                                    // Show success message
+                                    showToast('User deleted successfully', 'success');
+                                }
+                            }
+                        );
+                    }
+                });
             });
         }
 
-        function populateInventoryProductDropdown() {
-            inventoryProduct.innerHTML = '<option value="">Select Product</option>';
-            sampleData.products.forEach(product => {
-                const option = document.createElement('option');
-                option.value = product.id;
-                option.textContent = `${product.name} (${product.sku}) - Stock: ${product.stock}`;
-                inventoryProduct.appendChild(option);
-            });
+        // Load reports
+        function loadReports() {
+            const activeTab = document.querySelector('.tabs .tab.active');
+            if (!activeTab) return;
+            
+            const tabId = activeTab.getAttribute('data-tab');
+            
+            if (tabId === 'sales-report') {
+                loadSalesReport();
+            } else if (tabId === 'inventory-report') {
+                loadInventoryReport();
+            } else if (tabId === 'profit-report') {
+                loadProfitReport();
+            }
         }
 
-        function populateSaleItemProductDropdown() {
-            saleItemProduct.innerHTML = '<option value="">Select Product</option>';
-            sampleData.products.forEach(product => {
-                if (product.stock > 0) { // Only show products with available stock
-                    const option = document.createElement('option');
-                    option.value = product.id;
-                    option.textContent = `${product.name} ($${product.price.toFixed(2)}) - Stock: ${product.stock}`;
-                    saleItemProduct.appendChild(option);
+        // Load sales report
+        function loadSalesReport() {
+            const salesReportTable = document.getElementById('salesReportTable');
+            salesReportTable.innerHTML = '';
+            
+            // Get selected period
+            const period = document.getElementById('salesReportPeriod').value;
+            
+            // Filter sales based on period
+            let filteredSales = [...appData.sales];
+            let startDate;
+            const today = new Date();
+            
+            switch(period) {
+                case 'week':
+                    startDate = new Date(today.setDate(today.getDate() - 7));
+                    break;
+                case 'month':
+                    startDate = new Date(today.setMonth(today.getMonth() - 1));
+                    break;
+                case 'quarter':
+                    startDate = new Date(today.setMonth(today.getMonth() - 3));
+                    break;
+                case 'year':
+                    startDate = new Date(today.setFullYear(today.getFullYear() - 1));
+                    break;
+                case 'custom':
+                    // In a real app, you would show date pickers for custom range
+                    break;
+            }
+            
+            if (startDate) {
+                filteredSales = filteredSales.filter(sale => {
+                    const saleDate = new Date(sale.date);
+                    return saleDate >= startDate;
+                });
+            }
+            
+            // Group sales by date
+            const salesByDate = {};
+            
+            filteredSales.forEach(sale => {
+                if (!salesByDate[sale.date]) {
+                    salesByDate[sale.date] = {
+                        date: sale.date,
+                        orders: 0,
+                        productsSold: 0,
+                        revenue: 0,
+                        profit: 0
+                    };
+                }
+                
+                salesByDate[sale.date].orders++;
+                salesByDate[sale.date].productsSold += sale.items.reduce((sum, item) => sum + item.quantity, 0);
+                salesByDate[sale.date].revenue += sale.total;
+                
+                // Calculate profit (assuming we have purchase price in products)
+                const profit = sale.items.reduce((sum, item) => {
+                    const product = appData.products.find(p => p.id === item.productId);
+                    if (product) {
+                        return sum + ((item.price - product.purchasePrice) * item.quantity);
+                    }
+                    return sum;
+                }, 0);
+                
+                salesByDate[sale.date].profit += profit;
+            });
+            
+            // Convert to array and sort by date
+            const salesData = Object.values(salesByDate).sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Display report
+            if (salesData.length === 0) {
+                salesReportTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fas fa-chart-bar"></i>
+                            <p>No sales data for the selected period</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                salesData.forEach(data => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDate(data.date)}</td>
+                        <td>${data.orders}</td>
+                        <td>${data.productsSold}</td>
+                        <td>${formatCurrency(data.revenue)}</td>
+                        <td>${formatCurrency(data.profit)}</td>
+                    `;
+                    salesReportTable.appendChild(row);
+                });
+            }
+        }
+
+        // Load inventory report
+        function loadInventoryReport() {
+            const inventoryReportTable = document.getElementById('inventoryReportTable');
+            inventoryReportTable.innerHTML = '';
+            
+            // Get selected filter
+            const filter = document.getElementById('inventoryReportFilter').value;
+            
+            // Filter products based on filter
+            let filteredProducts = [...appData.products];
+            
+            switch(filter) {
+                case 'low':
+                    filteredProducts = filteredProducts.filter(p => p.status === "Low Stock");
+                    break;
+                case 'out':
+                    filteredProducts = filteredProducts.filter(p => p.status === "Out of Stock");
+                    break;
+                case 'category':
+                    // In a real app, you would show a category selector
+                    break;
+            }
+            
+            // Display report
+            if (filteredProducts.length === 0) {
+                inventoryReportTable.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-warehouse"></i>
+                            <p>No inventory data for the selected filter</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                filteredProducts.forEach(product => {
+                    const value = product.stock * product.sellingPrice;
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.name}</td>
+                        <td>${product.sku}</td>
+                        <td>${product.category}</td>
+                        <td>${product.stock}</td>
+                        <td>${formatCurrency(value)}</td>
+                        <td>
+                            <span class="badge ${
+                                product.status === "In Stock" ? "badge-success" : 
+                                product.status === "Low Stock" ? "badge-warning" : "badge-danger"
+                            }">${product.status}</span>
+                        </td>
+                    `;
+                    inventoryReportTable.appendChild(row);
+                });
+            }
+        }
+
+        // Load profit report
+        function loadProfitReport() {
+            const profitReportTable = document.getElementById('profitReportTable');
+            profitReportTable.innerHTML = '';
+            
+            // Get selected period
+            const period = document.getElementById('profitReportPeriod').value;
+            
+            // Filter sales based on period
+            let filteredSales = [...appData.sales];
+            let startDate;
+            const today = new Date();
+            
+            switch(period) {
+                case 'week':
+                    startDate = new Date(today.setDate(today.getDate() - 7));
+                    break;
+                case 'month':
+                    startDate = new Date(today.setMonth(today.getMonth() - 1));
+                    break;
+                case 'quarter':
+                    startDate = new Date(today.setMonth(today.getMonth() - 3));
+                    break;
+                case 'year':
+                    startDate = new Date(today.setFullYear(today.getFullYear() - 1));
+                    break;
+                case 'custom':
+                    // In a real app, you would show date pickers for custom range
+                    break;
+            }
+            
+            if (startDate) {
+                filteredSales = filteredSales.filter(sale => {
+                    const saleDate = new Date(sale.date);
+                    return saleDate >= startDate;
+                });
+            }
+            
+            // Group sales by product
+            const salesByProduct = {};
+            
+            filteredSales.forEach(sale => {
+                sale.items.forEach(item => {
+                    if (!salesByProduct[item.productId]) {
+                        const product = appData.products.find(p => p.id === item.productId);
+                        salesByProduct[item.productId] = {
+                            product: product ? product.name : `Product ${item.productId}`,
+                            sold: 0,
+                            revenue: 0,
+                            cost: 0,
+                            profit: 0
+                        };
+                    }
+                    
+                    salesByProduct[item.productId].sold += item.quantity;
+                    salesByProduct[item.productId].revenue += item.price * item.quantity;
+                    
+                    // Calculate cost (assuming we have purchase price in products)
+                    const product = appData.products.find(p => p.id === item.productId);
+                    if (product) {
+                        salesByProduct[item.productId].cost += product.purchasePrice * item.quantity;
+                        salesByProduct[item.productId].profit += (item.price - product.purchasePrice) * item.quantity;
+                    }
+                });
+            });
+            
+            // Convert to array
+            const profitData = Object.values(salesByProduct);
+            
+            // Display report
+            if (profitData.length === 0) {
+                profitReportTable.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-chart-line"></i>
+                            <p>No profit data for the selected period</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                profitData.forEach(data => {
+                    const margin = data.revenue > 0 ? ((data.profit / data.revenue) * 100) : 0;
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${data.product}</td>
+                        <td>${data.sold}</td>
+                        <td>${formatCurrency(data.revenue)}</td>
+                        <td>${formatCurrency(data.cost)}</td>
+                        <td>${formatCurrency(data.profit)}</td>
+                        <td>${margin.toFixed(2)}%</td>
+                    `;
+                    profitReportTable.appendChild(row);
+                });
+            }
+        }
+
+        // Load settings
+        function loadSettings() {
+            businessName.value = appData.settings.businessName;
+            businessAddress.value = appData.settings.businessAddress;
+            currency.value = appData.settings.currency;
+            lowStockThreshold.value = appData.settings.lowStockThreshold;
+            taxRate.value = appData.settings.taxRate;
+            
+            // Load users table
+            loadUsersTable();
+        }
+
+        // Populate supplier dropdowns
+        function populateSupplierDropdowns() {
+            const supplierDropdowns = [
+                document.getElementById('productSupplier'),
+                document.getElementById('editProductSupplier'),
+                document.getElementById('inventorySupplier')
+            ];
+            
+            supplierDropdowns.forEach(dropdown => {
+                if (dropdown) {
+                    dropdown.innerHTML = '<option value="">Select Supplier</option>';
+                    appData.suppliers.forEach(supplier => {
+                        const option = document.createElement('option');
+                        option.value = supplier.id;
+                        option.textContent = supplier.name;
+                        dropdown.appendChild(option);
+                    });
                 }
             });
         }
 
+        // Populate product dropdowns
+        function populateProductDropdowns() {
+            const productDropdowns = [
+                document.getElementById('inventoryProduct'),
+                document.getElementById('saleItemProduct')
+            ];
+            
+            productDropdowns.forEach(dropdown => {
+                if (dropdown) {
+                    dropdown.innerHTML = '<option value="">Select Product</option>';
+                    appData.products.forEach(product => {
+                        // For sale items, only show products with stock > 0
+                        if (dropdown.id === 'saleItemProduct' && product.stock <= 0) return;
+                        
+                        const option = document.createElement('option');
+                        option.value = product.id;
+                        option.textContent = `${product.name} (${product.sku}) - Stock: ${product.stock}`;
+                        dropdown.appendChild(option);
+                    });
+                }
+            });
+            
+            // Add event listeners to auto-fill prices when product is selected
+            document.getElementById('saleItemProduct').addEventListener('change', function() {
+                const productId = this.value;
+                const product = appData.products.find(p => p.id == productId);
+                if (product) {
+                    document.getElementById('saleItemPrice').value = product.sellingPrice;
+                    document.getElementById('saleItemQuantity').value = 1;
+                    document.getElementById('saleItemQuantity').max = product.stock;
+                }
+            });
+        }
+
+        // Update sale totals
         function updateSaleTotals() {
             const rows = saleItemsTable.querySelectorAll('tr');
             let subtotal = 0;
@@ -2736,15 +4480,72 @@
                 subtotal += price * quantity;
             });
             
-            const taxRate = 7.5; // From settings
-            const tax = subtotal * (taxRate / 100);
+            const tax = subtotal * (appData.settings.taxRate / 100);
             const total = subtotal + tax;
             
-            saleSubtotal.value = `$${subtotal.toFixed(2)}`;
-            saleTax.value = `$${tax.toFixed(2)}`;
-            saleTotal.value = `$${total.toFixed(2)}`;
+            saleSubtotal.value = formatCurrency(subtotal);
+            saleTax.value = formatCurrency(tax);
+            saleTotal.value = formatCurrency(total);
         }
 
+        // Generate pagination
+        function generatePagination(containerId, currentPage, totalPages, callback) {
+            const paginationContainer = document.getElementById(containerId);
+            paginationContainer.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Previous button
+            if (currentPage > 1) {
+                const prevItem = document.createElement('div');
+                prevItem.className = 'page-item';
+                prevItem.innerHTML = `<a href="#" class="page-link" data-page="${currentPage - 1}">Previous</a>`;
+                paginationContainer.appendChild(prevItem);
+            }
+            
+            // Page numbers
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageItem = document.createElement('div');
+                pageItem.className = 'page-item';
+                pageItem.innerHTML = `<a href="#" class="page-link ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</a>`;
+                paginationContainer.appendChild(pageItem);
+            }
+            
+            // Next button
+            if (currentPage < totalPages) {
+                const nextItem = document.createElement('div');
+                nextItem.className = 'page-item';
+                nextItem.innerHTML = `<a href="#" class="page-link" data-page="${currentPage + 1}">Next</a>`;
+                paginationContainer.appendChild(nextItem);
+            }
+            
+            // Add event listeners to page links
+            paginationContainer.querySelectorAll('.page-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = parseInt(this.getAttribute('data-page'));
+                    callback(page);
+                });
+            });
+        }
+
+        // Show confirmation modal
+        function showConfirmModal(title, message, callback) {
+            confirmModalTitle.textContent = title;
+            confirmModalMessage.textContent = message;
+            deleteCallback = callback;
+            confirmModal.classList.add('show');
+        }
+
+        // Show toast notification
         function showToast(message, type) {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -2770,6 +4571,113 @@
                     toast.remove();
                 }, 300);
             }, 5000);
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: appData.settings.currency || 'USD'
+            });
+            return formatter.format(amount);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Get sales report data for export
+        function getSalesReportData() {
+            const headers = ['Date', 'Orders', 'Products Sold', 'Revenue', 'Profit'];
+            const data = [];
+            
+            // Get the sales data from the table
+            const rows = document.querySelectorAll('#salesReportTable tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length === 5) {
+                    data.push([
+                        cells[0].textContent,
+                        cells[1].textContent,
+                        cells[2].textContent,
+                        cells[3].textContent,
+                        cells[4].textContent
+                    ]);
+                }
+            });
+            
+            return [headers, ...data];
+        }
+
+        // Get inventory report data for export
+        function getInventoryReportData() {
+            const headers = ['Product', 'SKU', 'Category', 'Current Stock', 'Value', 'Status'];
+            const data = [];
+            
+            // Get the inventory data from the table
+            const rows = document.querySelectorAll('#inventoryReportTable tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length === 6) {
+                    data.push([
+                        cells[0].textContent,
+                        cells[1].textContent,
+                        cells[2].textContent,
+                        cells[3].textContent,
+                        cells[4].textContent,
+                        cells[5].textContent
+                    ]);
+                }
+            });
+            
+            return [headers, ...data];
+        }
+
+        // Get profit report data for export
+        function getProfitReportData() {
+            const headers = ['Product', 'Sold', 'Revenue', 'Cost', 'Profit', 'Margin'];
+            const data = [];
+            
+            // Get the profit data from the table
+            const rows = document.querySelectorAll('#profitReportTable tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length === 6) {
+                    data.push([
+                        cells[0].textContent,
+                        cells[1].textContent,
+                        cells[2].textContent,
+                        cells[3].textContent,
+                        cells[4].textContent,
+                        cells[5].textContent
+                    ]);
+                }
+            });
+            
+            return [headers, ...data];
+        }
+
+        // Export data to CSV
+        function exportToCSV(filename, data) {
+            const csvContent = data.map(row => 
+                row.map(field => `"${field.toString().replace(/"/g, '""')}"`).join(',')
+            ).join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast(`Report exported as ${filename}`, 'success');
         }
     </script>
 </body>
