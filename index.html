@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StockMaster | Inventory Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="navigation.js"></script>
     <style>
         :root {
             --primary: #4361ee;
@@ -2578,53 +2577,53 @@
 
             // Switch between sections
             sidebarLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // Remove active class from all links
-                    sidebarLinks.forEach(l => l.classList.remove('active'));
-                    
-                    // Add active class to clicked link
-                    this.classList.add('active');
-                    
-                    // Hide all sections
-                    sectionContents.forEach(section => section.classList.remove('active'));
-                    
-                    // Show selected section
-                    const sectionId = this.getAttribute('data-section') + '-section';
-                    document.getElementById(sectionId).classList.add('active');
-                    
-                    // Close sidebar on mobile
-                    if (window.innerWidth < 992) {
-                        sidebar.classList.remove('show');
-                    }
-                    
-                    // Load data for the section
-                    switch(this.getAttribute('data-section')) {
-                        case 'dashboard':
-                            loadDashboardData();
-                            break;
-                        case 'products':
-                            loadProductsTable();
-                            break;
-                        case 'inventory':
-                            loadInventoryTable();
-                            break;
-                        case 'sales':
-                            loadSalesTable();
-                            break;
-                        case 'suppliers':
-                            loadSuppliersTable();
-                            break;
-                        case 'reports':
-                            loadReports();
-                            break;
-                        case 'settings':
-                            loadSettings();
-                            break;
-                    }
-                });
-            });
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Remove active class from all links
+        sidebarLinks.forEach(l => l.classList.remove('active'));
+        
+        // Add active class to clicked link
+        this.classList.add('active'));
+        
+        // Hide all sections
+        sectionContents.forEach(section => section.classList.remove('active'));
+        
+        // Show selected section
+        const sectionId = this.getAttribute('data-section') + '-section';
+        document.getElementById(sectionId).classList.add('active'));
+        
+        // Close sidebar on mobile
+        if (window.innerWidth < 992) {
+            sidebar.classList.remove('show'));
+        }
+        
+        // Load data for the section
+        switch(this.getAttribute('data-section')) {
+            case 'dashboard':
+                loadDashboardData();
+                break;
+            case 'products':
+                loadProductsTable();
+                break;
+            case 'inventory':
+                loadInventoryTable();
+                break;
+            case 'sales':
+                loadSalesTable();
+                break;
+            case 'suppliers':
+                loadSuppliersTable();
+                break;
+            case 'reports':
+                loadReports();
+                break;
+            case 'settings':
+                loadSettings();
+                break;
+        }
+    });
+});
 
             // Switch between tabs
             tabs.forEach(tab => {
@@ -4680,6 +4679,89 @@
             
             showToast(`Report exported as ${filename}`, 'success');
         }
+        function getSalesReportData() {
+    const headers = ['Date', 'Orders', 'Products Sold', 'Revenue', 'Profit'];
+    const data = [];
+    
+    // Get the sales data from the table
+    const rows = document.querySelectorAll('#salesReportTable tr');
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length === 5) {
+            data.push([
+                cells[0].textContent,
+                cells[1].textContent,
+                cells[2].textContent,
+                cells[3].textContent,
+                cells[4].textContent
+            ]);
+        }
+    });
+    
+    return [headers, ...data];
+}
+
+// Get inventory report data for export
+function getInventoryReportData() {
+    const headers = ['Product', 'SKU', 'Category', 'Current Stock', 'Value', 'Status'];
+    const data = [];
+    
+    // Get the inventory data from the table
+    const rows = document.querySelectorAll('#inventoryReportTable tr');
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length === 6) {
+            data.push([
+                cells[0].textContent,
+                cells[1].textContent,
+                cells[2].textContent,
+                cells[3].textContent,
+                cells[4].textContent,
+                cells[5].textContent
+            ]);
+        }
+    });
+    
+    return [headers, ...data];
+}
+
+// Get profit report data for export
+function getProfitReportData() {
+    const headers = ['Product', 'Sold', 'Revenue', 'Cost', 'Profit', 'Margin'];
+    const data = [];
+    
+    // Get the profit data from the table
+    const rows = document.querySelectorAll('#profitReportTable tr');
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length === 6) {
+            data.push([
+                cells[0].textContent,
+                cells[1].textContent,
+                cells[2].textContent,
+                cells[3].textContent,
+                cells[4].textContent,
+                cells[5].textContent
+            ]);
+        }
+    });
+    
+    return [headers, ...data];
+}
+
+// Connected the export buttons to the correct functions:
+// Report export buttons
+exportSalesReport.addEventListener('click', function() {
+    exportToCSV('sales_report.csv', getSalesReportData());
+});
+
+exportInventoryReport.addEventListener('click', function() {
+    exportToCSV('inventory_report.csv', getInventoryReportData());
+});
+
+exportProfitReport.addEventListener('click', function() {
+    exportToCSV('profit_report.csv', getProfitReportData());
+});
     </script>
 </body>
 </html>
